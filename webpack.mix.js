@@ -1,24 +1,36 @@
 const mix = require('laravel-mix');
 
-/*
- |--------------------------------------------------------------------------
- | Mix Asset Management
- |--------------------------------------------------------------------------
- |
- | Mix provides a clean, fluent API for defining some Webpack build steps
- | for your Laravel application. By default, we are compiling the Sass
- | file for the application as well as bundling up all the JS files.
- |
- */
-
+// Entry points and output paths
 mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css');
+   .sass('resources/sass/app.scss', 'public/css')
+   .vue(); // Include Vue support
 
+// Enable source maps in development
+if (!mix.inProduction()) {
+    mix.sourceMaps();
+}
 
-mix.js(['resources/js/admin/admin.js'], 'public/js')
-    .sass('resources/sass/admin/admin.scss', 'public/css');
-
-// if (mix.inProduction()) {
-//     mix.version();
-// }
+// Versioning for production
+if (mix.inProduction()) {
     mix.version();
+}
+
+// Explicitly handle .vue files
+mix.webpackConfig({
+    module: {
+        rules: [
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader'
+            }
+        ]
+    }
+});
+
+// Ensure vue-loader plugin is used
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+mix.webpackConfig({
+    plugins: [
+        new VueLoaderPlugin()
+    ]
+});
