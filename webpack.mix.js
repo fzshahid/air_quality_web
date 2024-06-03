@@ -1,9 +1,13 @@
 const mix = require('laravel-mix');
 
-// Entry points and output paths
 mix.js('resources/js/app.js', 'public/js')
-   .sass('resources/sass/app.scss', 'public/css')
-   .vue(); // Include Vue support
+.sass('resources/sass/app.scss', 'public/css');
+
+
+mix
+  .js(["resources/js/admin/admin.js"], "public/js")
+  .sass("resources/sass/admin/admin.scss", "public/css")
+  .vue();
 
 // Enable source maps in development
 if (!mix.inProduction()) {
