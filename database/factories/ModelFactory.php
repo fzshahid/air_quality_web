@@ -35,3 +35,41 @@ $factory->define(App\Models\AirQualityReading::class, static function (Faker\Gen
         
     ];
 });
+/** @var  \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\Models\Ccs811Reading::class, static function (Faker\Generator $faker) {
+    return [
+        'temperature' => $faker->randomNumber(5),
+        'humidity' => $faker->randomNumber(5),
+        'eco2' => $faker->randomNumber(5),
+        'tvoc' => $faker->randomNumber(5),
+        'created_at' => $faker->dateTime,
+        'updated_at' => $faker->dateTime,
+        
+        
+    ];
+});
+/** @var  \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\Models\Scd41Reading::class, static function (Faker\Generator $faker) {
+    return [
+        'temperature' => $faker->randomNumber(5),
+        'humidity' => $faker->randomNumber(5),
+        'eco2' => $faker->randomNumber(5),
+        'created_at' => $faker->dateTime,
+        'updated_at' => $faker->dateTime,
+        
+        
+    ];
+});
+/** @var  \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\Models\Sps30Reading::class, static function (Faker\Generator $faker) {
+    return [
+        'pm1_0' => $faker->randomFloat,
+        'pm2_5' => $faker->randomFloat,
+        'pm4' => $faker->randomFloat,
+        'pm10' => $faker->randomFloat,
+        'created_at' => $faker->dateTime,
+        'updated_at' => $faker->dateTime,
+        
+        
+    ];
+});

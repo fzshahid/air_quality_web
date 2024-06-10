@@ -58,3 +58,48 @@ Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->gro
         });
     });
 });
+
+/* Auto-generated admin routes */
+Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->group(static function () {
+    Route::prefix('admin')->namespace('Admin')->name('admin/')->group(static function() {
+        Route::prefix('ccs811-readings')->name('ccs811-readings/')->group(static function() {
+            Route::get('/',                                             'Ccs811ReadingsController@index')->name('index');
+            Route::get('/create',                                       'Ccs811ReadingsController@create')->name('create');
+            Route::post('/',                                            'Ccs811ReadingsController@store')->name('store');
+            Route::get('/{ccs811Reading}/edit',                         'Ccs811ReadingsController@edit')->name('edit');
+            Route::post('/bulk-destroy',                                'Ccs811ReadingsController@bulkDestroy')->name('bulk-destroy');
+            Route::post('/{ccs811Reading}',                             'Ccs811ReadingsController@update')->name('update');
+            Route::delete('/{ccs811Reading}',                           'Ccs811ReadingsController@destroy')->name('destroy');
+        });
+    });
+});
+
+/* Auto-generated admin routes */
+Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->group(static function () {
+    Route::prefix('admin')->namespace('Admin')->name('admin/')->group(static function() {
+        Route::prefix('scd41-readings')->name('scd41-readings/')->group(static function() {
+            Route::get('/',                                             'Scd41ReadingsController@index')->name('index');
+            Route::get('/create',                                       'Scd41ReadingsController@create')->name('create');
+            Route::post('/',                                            'Scd41ReadingsController@store')->name('store');
+            Route::get('/{scd41Reading}/edit',                          'Scd41ReadingsController@edit')->name('edit');
+            Route::post('/bulk-destroy',                                'Scd41ReadingsController@bulkDestroy')->name('bulk-destroy');
+            Route::post('/{scd41Reading}',                              'Scd41ReadingsController@update')->name('update');
+            Route::delete('/{scd41Reading}',                            'Scd41ReadingsController@destroy')->name('destroy');
+        });
+    });
+});
+
+/* Auto-generated admin routes */
+Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->group(static function () {
+    Route::prefix('admin')->namespace('Admin')->name('admin/')->group(static function() {
+        Route::prefix('sps30-readings')->name('sps30-readings/')->group(static function() {
+            Route::get('/',                                             'Sps30ReadingsController@index')->name('index');
+            Route::get('/create',                                       'Sps30ReadingsController@create')->name('create');
+            Route::post('/',                                            'Sps30ReadingsController@store')->name('store');
+            Route::get('/{sps30Reading}/edit',                          'Sps30ReadingsController@edit')->name('edit');
+            Route::post('/bulk-destroy',                                'Sps30ReadingsController@bulkDestroy')->name('bulk-destroy');
+            Route::post('/{sps30Reading}',                              'Sps30ReadingsController@update')->name('update');
+            Route::delete('/{sps30Reading}',                            'Sps30ReadingsController@destroy')->name('destroy');
+        });
+    });
+});
