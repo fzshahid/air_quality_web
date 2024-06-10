@@ -43,3 +43,18 @@ Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->gro
         Route::post('/password',                                    'ProfileController@updatePassword')->name('update-password');
     });
 });
+
+/* Auto-generated admin routes */
+Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->group(static function () {
+    Route::prefix('admin')->namespace('Admin')->name('admin/')->group(static function() {
+        Route::prefix('air-quality-readings')->name('air-quality-readings/')->group(static function() {
+            Route::get('/',                                             'AirQualityReadingsController@index')->name('index');
+            Route::get('/create',                                       'AirQualityReadingsController@create')->name('create');
+            Route::post('/',                                            'AirQualityReadingsController@store')->name('store');
+            Route::get('/{airQualityReading}/edit',                     'AirQualityReadingsController@edit')->name('edit');
+            Route::post('/bulk-destroy',                                'AirQualityReadingsController@bulkDestroy')->name('bulk-destroy');
+            Route::post('/{airQualityReading}',                         'AirQualityReadingsController@update')->name('update');
+            Route::delete('/{airQualityReading}',                       'AirQualityReadingsController@destroy')->name('destroy');
+        });
+    });
+});
