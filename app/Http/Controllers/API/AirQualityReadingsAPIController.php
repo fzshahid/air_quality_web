@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\AirQualityReading\StoreAirQualityAPIReading;
+use App\Http\Requests\API\AirQualityReading\StoreCcs811APIReading;
+use App\Http\Requests\API\AirQualityReading\StoreScd41APIReading;
+use App\Http\Requests\API\AirQualityReading\StoreSps30APIReading;
 use App\Http\Services\AirQualityReadingsService;
-use App\Models\AirQualityReading;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 
@@ -18,34 +19,64 @@ class AirQualityReadingsAPIController extends Controller
      *
      * @param AirQualityReadingsService $airQualityReadingsService
      */
-    public function __construct(AirQualityReadingsService $airQualityReadingsService) {
+    public function __construct(AirQualityReadingsService $airQualityReadingsService)
+    {
         $this->airQualityReadingsService = $airQualityReadingsService;
     }
-    
+
     /**
-     * Store a newly created resource in storage.
+     * Store SPS30 Reading resource in storage.
      *
-     * @param StoreAirQualityAPIReading $request
+     * @param StoreSps30APIReading $request
      * @return array|RedirectResponse|Redirector
      */
-    public function store(StoreAirQualityAPIReading $request)
+    public function storeSps30(StoreSps30APIReading $request)
     {
         // Sanitize input
         $sanitized = $request->getSanitized();
-        // $sanitized = [
-        //     'co2' => 1200,
-        //     'voc' => 800,
-        //     'humidity' => 45,
-        //     'temperature' => 22,
-        //     'pm2_5' => 40,
-        //     'pm10' => 160,
-        // ];
-
         // Store the AirQualityReading
-        $airQualityReading = $this->airQualityReadingsService->store($sanitized);
+        $airQualityReading = $this->airQualityReadingsService->storeSps30($sanitized);
 
         return response()->json([
-            'message' => 'AQI reading stored successfully!',
+            'message' => 'SPS30 reading stored successfully!',
+            'reading' => $airQualityReading
+        ]);
+    }
+    /**
+     * Store a Scd41 resource in storage.
+     *
+     * @param StoreScd41APIReading $request
+     * @return array|RedirectResponse|Redirector
+     */
+    public function storeScd41(StoreScd41APIReading $request)
+    {
+        // Sanitize input
+        $sanitized = $request->getSanitized();
+
+        // Store the AirQualityReading
+        $airQualityReading = $this->airQualityReadingsService->storeScd41($sanitized);
+
+        return response()->json([
+            'message' => 'SCD41 reading stored successfully!',
+            'reading' => $airQualityReading
+        ]);
+    }
+    /**
+     * Store a newly scs811 resource in storage.
+     *
+     * @param StoreCcs811APIReading $request
+     * @return array|RedirectResponse|Redirector
+     */
+    public function storeCcs811(StoreCcs811APIReading $request)
+    {
+        // Sanitize input
+        $sanitized = $request->getSanitized();
+
+        // Store the AirQualityReading
+        $airQualityReading = $this->airQualityReadingsService->storeCcs811($sanitized);
+
+        return response()->json([
+            'message' => 'CCS811 reading stored successfully!',
             'reading' => $airQualityReading
         ]);
     }

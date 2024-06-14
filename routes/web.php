@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,6 +21,14 @@ Route::get('/', function () {
 
 /* Auto-generated admin routes */
 Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->group(static function () {
+
+    Route::prefix('dashboard')->namespace('App\Http\Controllers\Admin')->name('dashboard/')->group(static function () {
+        Route::get('/',                                             [DashboardController::class, 'index'])->name('index');
+        Route::get('/new-users',                                       [DashboardController::class, 'newUsers'])->name('new-users');
+        Route::get('/active-users',                                       [DashboardController::class, 'activeUsers'])->name('active-users');
+        Route::get('/posted-offers',                                       [DashboardController::class, 'postedOffers'])->name('posted-offers');
+    });
+    
     Route::prefix('admin')->namespace('Admin')->name('admin/')->group(static function() {
         Route::prefix('admin-users')->name('admin-users/')->group(static function() {
             Route::get('/',                                             'AdminUsersController@index')->name('index');

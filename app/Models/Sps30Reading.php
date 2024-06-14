@@ -14,6 +14,13 @@ class Sps30Reading extends Model
     
     ];
     
+    protected $casts = [
+        'pm1_0' => 'float',
+        'pm2_5' => 'float',
+        'pm4' => 'float',
+        'pm10' => 'float',
+    
+    ];   
     
     protected $dates = [
         'created_at',

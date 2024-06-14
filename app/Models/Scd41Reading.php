@@ -10,22 +10,28 @@ class Scd41Reading extends Model
         'temperature',
         'humidity',
         'eco2',
-    
+
     ];
-    
-    
+
+    protected $casts = [
+        'temperature' => 'float',
+        'humidity' => 'float',
+        'eco2' => 'float',
+
+    ];
+
     protected $dates = [
         'created_at',
         'updated_at',
     
     ];
-    
+
     protected $appends = ['resource_url'];
 
     /* ************************ ACCESSOR ************************* */
 
     public function getResourceUrlAttribute()
     {
-        return url('/admin/scd41-readings/'.$this->getKey());
+        return url('/admin/scd41-readings/' . $this->getKey());
     }
 }

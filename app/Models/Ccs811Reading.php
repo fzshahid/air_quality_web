@@ -15,6 +15,13 @@ class Ccs811Reading extends Model
     ];
     
     
+    protected $casts = [
+        'temperature' => 'float',
+        'humidity' => 'float',
+        'eco2' => 'float',
+        'tvoc' => 'float',
+    ];
+
     protected $dates = [
         'created_at',
         'updated_at',

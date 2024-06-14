@@ -3,10 +3,27 @@
 namespace App\Http\Services;
 
 use App\Models\AirQualityReading;
+use App\Models\Ccs811Reading;
+use App\Models\Scd41Reading;
+use App\Models\Sps30Reading;
 use Illuminate\Support\Arr;
 
 class AirQualityReadingsService
 {
+    public function storeSps30(array $input) {
+        $reading = Sps30Reading::create($input);
+        return $reading;
+    }
+    public function storeScd41(array $input) {
+        $reading = Scd41Reading::create($input);
+        return $reading;
+    }
+    public function storeCcs811(array $input) {
+        $reading = Ccs811Reading::create($input);
+        return $reading;
+    }
+
+    
     public function store(array $input)
     {
         $pm25 = $input['pm2_5'];

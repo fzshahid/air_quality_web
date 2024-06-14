@@ -16,6 +16,8 @@ import './app-components/bootstrap';
 import './index';
 
 import 'craftable/dist/ui';
+import CommitChart from './dashboard/CommitChart';
+import BarChartConatiner from './dashboard/BarChartContainer.vue';
 
 Vue.component('multiselect', Multiselect);
 Vue.use(VeeValidate, {strict: true});
@@ -27,4 +29,9 @@ Vue.use(VueCookie);
 
 new Vue({
     mixins: [Admin],
+    components: {
+        'CommitChart': CommitChart ,
+        'barchartcontainer': BarChartConatiner,
+        // 'linechartcontainer': LineChartConatiner, 
+    }
 });
