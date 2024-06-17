@@ -24,7 +24,10 @@ Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->gro
 
     Route::prefix('dashboard')->namespace('App\Http\Controllers\Admin')->name('dashboard/')->group(static function () {
         Route::get('/',                                             [DashboardController::class, 'index'])->name('index');
-        Route::get('/new-users',                                       [DashboardController::class, 'newUsers'])->name('new-users');
+        Route::get('/temperature-line-chart',                                       [DashboardController::class, 'temperatureLineChart'])->name('temperatureLineChart');
+        Route::get('/line-chart-pm',                                       [DashboardController::class, 'lineChartPm25'])->name('lineChartPm25');
+        Route::get('/line-chart-humidity',                                       [DashboardController::class, 'lineChartPm10'])->name('lineChartPm10');
+        Route::get('/line-chart-co-2',                                       [DashboardController::class, 'lineChartCo2'])->name('lineChartCo2');
         Route::get('/active-users',                                       [DashboardController::class, 'activeUsers'])->name('active-users');
         Route::get('/posted-offers',                                       [DashboardController::class, 'postedOffers'])->name('posted-offers');
     });

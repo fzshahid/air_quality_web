@@ -19,6 +19,10 @@ Vue.component("line-chart-container", {
       type: String,
       require: true,
     },
+    title: {
+      type: String,
+      require: true,
+    },
     startDate: {
       type: String,
       require: true,
@@ -34,7 +38,7 @@ Vue.component("line-chart-container", {
     options: {
       title: {
         display: true,
-        text: "Offers by Category"
+        text: ""
       },
       scales: {
         yAxes: [{
@@ -61,6 +65,7 @@ Vue.component("line-chart-container", {
   }),
   async mounted() {
     this.loaded = false;
+    this.options.title = this.title;
     await this.loadData();
   },
   watch: {
@@ -96,7 +101,7 @@ Vue.component("line-chart-container", {
         });
 
         let totalDataSet = {
-          label: 'Total Offers',
+          label: 'AQI',
           borderWidth: 1,
           data: totalDataPoints,
         };
