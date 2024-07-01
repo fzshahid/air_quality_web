@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\WidgetController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,7 +15,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get('/', [WidgetController::class, 'index'])->name('widget.index');
+Route::get('/admin', function () {
     return redirect(route('brackets/admin-auth::admin/login'));
 });
 

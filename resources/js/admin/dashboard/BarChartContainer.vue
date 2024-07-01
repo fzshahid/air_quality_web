@@ -1,16 +1,14 @@
-<template>
-  <div class="container">
-    <bar-chart v-if="loaded" :chartdata="chartdata" :options="options" />
-  </div>
-</template>
-
 <script>
 import axios from "axios";
 import BarChart from "./BarChart";
+import { template } from "lodash";
 
 const BarChartContainer = {
   name: "bar-chart-container",
   components: { BarChart },
+  template: `  <div class="container">
+    <bar-chart v-if="loaded" :chartdata="chartdata" :options="options" />
+  </div>`,
   props: {
     dataUrl: {
       type: String,
