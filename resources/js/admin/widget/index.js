@@ -1,1 +1,1 @@
-import Widget from './Widget.vue';
+import Widget from './Widget.js';

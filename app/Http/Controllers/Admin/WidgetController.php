@@ -49,6 +49,25 @@ class WidgetController extends Controller
         return view('admin.widget.index', ['data' => $data]);
     }
 
+    /**
+     * Get Widget Data
+     *
+     * @param Request $request
+     * @return array|Factory|View
+     */
+    public function getWidgetData(Request $request)
+    {
+        $data = [
+            'humidity' => 45,
+            'temperature' => 22.5,
+            'pm1_5' => 12,
+            'pm10' => 18,
+            'tvoc' => 450,
+            'co2' => 1001
+        ];
+        return response()->json(['data' => $data]);
+    }
+
     public function subscribe(Request $request)
     {
         $input = $request->validate([

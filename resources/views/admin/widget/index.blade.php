@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Air Quality Measurement Widget</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/vue-toasted@2.1.2/dist/vue-toasted.min.css" rel="stylesheet">
@@ -89,108 +90,57 @@
         }
     </style>
 </head>
-<body>
+<body >
     <div id="app">
-        <div class="widget">
-            <h2>Air Quality Measurement</h2>
-            <div class="measurement" v-for="(value, key) in data" :key="key">
-                <label>@{{ keyLabels[key] }}:</label>
-                <span>@{{ value }}</span>
+        <widget inline-template>
+        <div >
+            <div class="widget">
+                <h2>Air Quality Measurement</h2>
+                <div class="measurement" v-for="(value, key) in aqiData" :key="key">
+                    <label>@{{ keyLabels[key] }}:</label>
+                    <span>@{{ value }}</span>
+                </div>
+                <div class="advisory" v-if="aqiData.humidity > 60">
+                    High humidity levels detected. Consider using a dehumidifier.
+                </div>
+                <div class="advisory" v-if="aqiData.co2 > 1000">
+                    High CO₂ levels detected. Ensure good ventilation.
+                </div>
+                <div class="subscribe">
+                    <button class="btn btn-primary" @click="showModal = true">Subscribe to Notifications</button>
+                </div>
             </div>
-            <div class="advisory" v-if="data.humidity > 60">
-                High humidity levels detected. Consider using a dehumidifier.
-            </div>
-            <div class="advisory" v-if="data.co2 > 1000">
-                High CO₂ levels detected. Ensure good ventilation.
-            </div>
-            <div class="subscribe">
-                <button class="btn btn-primary" @click="showModal = true">Subscribe to Notifications</button>
-            </div>
-        </div>
-
-        <!-- Modal -->
-        <div class="modal fade" id="subscribeModal" tabindex="-1" aria-labelledby="subscribeModalLabel" aria-hidden="true" ref="subscribeModal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="subscribeModalLabel">Subscribe to Notifications</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="email" class="form-control" v-model="email" placeholder="Enter your email">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="subscribe">Submit</button>
+    
+            <!-- Modal -->
+            <div class="modal fade" id="subscribeModal" tabindex="-1" aria-labelledby="subscribeModalLabel" aria-hidden="true" ref="subscribeModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="subscribeModalLabel">Subscribe to Notifications</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="email" class="form-control" v-model="email" placeholder="Enter your email">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" @click="subscribe">Submit</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        </widget>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/vue-toasted@2.1.2/dist/vue-toasted.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
-    <script>
-        // Vue.use(Toasted);
-
-        new Vue({
-            el: '#app',
-            data: {
-                data: @json($data),
-                keyLabels: {
-                    humidity: 'Humidity',
-                    temperature: 'Temperature',
-                    pm1_5: 'PM1.5',
-                    pm10: 'PM10',
-                    tvoc: 'TVOC',
-                    co2: 'CO₂'
-                },
-                showModal: false,
-                email: ''
-            },
-            watch: {
-                showModal(newValue) {
-                    if (newValue) {
-                        $(this.$refs.subscribeModal).modal('show');
-                    } else {
-                        $(this.$refs.subscribeModal).modal('hide');
-                    }
-                }
-            },
-            methods: {
-                subscribe() {
-                    if (this.email === '') {
-                        this.$toasted.show("Please enter a valid email address", {
-                            type: 'error',
-                            duration: 3000
-                        });
-                        return;
-                    }
-                    
-                    axios.post('/api/subscribe', { email: this.email })
-                        .then(response => {
-                            this.$toasted.show("Successfully subscribed!", {
-                                type: 'success',
-                                duration: 3000
-                            });
-                            this.showModal = false;
-                            this.email = '';
-                        })
-                        .catch(error => {
-                            this.$toasted.show("Subscription failed", {
-                                type: 'error',
-                                duration: 3000
-                            });
-                        });
-                }
-            }
-        });
-    </script>
+    <script src="{{mix('js/admin.js')}}" type="text/javascript"></script>
 </body>
 </html>

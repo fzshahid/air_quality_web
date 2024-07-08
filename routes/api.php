@@ -18,14 +18,19 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group([
-    // 'middleware' => 'auth:api',
+    'middleware' => 'auth:api',
 ], function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-    Route::post('/subscribe', [WidgetController::class, 'subscribe'])->name('airQualityReadings.subscribe');
     Route::post('/air-quality-readings', [AirQualityReadingsAPIController::class, 'store'])->name('airQualityReadings.store');
     Route::post('/store-ccs811-readings', [AirQualityReadingsAPIController::class, 'storeCcs811'])->name('airQualityReadings.storeCcs811');
     Route::post('/store-scd41-readings', [AirQualityReadingsAPIController::class, 'storeScd41'])->name('airQualityReadings.storeScd41');
     Route::post('/store-sps30-readings', [AirQualityReadingsAPIController::class, 'storeSps30'])->name('airQualityReadings.storeSps30');
+});
+Route::group([
+], function () {
+    
+    Route::post('/subscribe', [WidgetController::class, 'subscribe'])->name('airQualityReadings.subscribe');
+    Route::get('/get-widget-data', [WidgetController::class, 'getWidgetData'])->name('getWidgetData');
 });
