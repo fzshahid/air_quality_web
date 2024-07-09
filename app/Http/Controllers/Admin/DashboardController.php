@@ -178,9 +178,15 @@ class DashboardController extends Controller
                 'category_id' => 4,
                 'category_name' => 'CO2',
                 'date' => now()->subDays($i)->format(DATE_FORMAT),
+                'total' => random_int(0, 5000),
+            ];
+            $eco2 = [
+                'category_id' => 5,
+                'category_name' => 'eCO2',
+                'date' => now()->subDays($i)->format(DATE_FORMAT),
                 'total' => random_int(400, 5000),
             ];
-            array_push($data, $temp, $humid, $pm2_5, $pm10, $co2);
+            array_push($data, $temp, $humid, $pm2_5, $pm10, $co2, $eco2);
         }
 
         return response()->json($data);
@@ -222,6 +228,144 @@ class DashboardController extends Controller
             // ];
             // array_push($data, $temp);
             array_push($data, $temp);
+        }
+
+        return response()->json($data);
+    }
+
+    /**
+     * Analytic of offers.
+     *
+     * @param Request $request
+     * @return array|Factory|View
+     */
+    public function lineChartHumidity(Request $request)
+    {
+        $data = [];
+        for ($i=0; $i < 10; $i++) { 
+            
+            $humid = [
+                'category_id' => 2,
+                'category_name' => 'Humidity',
+                'date' => now()->subDays($i)->format(DATE_FORMAT),
+                'total' => random_int(0, 100),
+            ];
+            array_push($data, $humid);
+        }
+
+        return response()->json($data);
+    }
+    /**
+     * Analytic of offers.
+     *
+     * @param Request $request
+     * @return array|Factory|View
+     */
+    public function lineChartPM15(Request $request)
+    {
+        $data = [];
+        for ($i=0; $i < 10; $i++) { 
+            
+            $item = [
+                'category_id' => 3,
+                'category_name' => 'PM1.5',
+                'date' => now()->subDays($i)->format(DATE_FORMAT),
+                'total' => random_int(0, 500),
+            ];
+            
+            array_push($data, $item);
+        }
+
+        return response()->json($data);
+    }
+    /**
+     * Analytic of offers.
+     *
+     * @param Request $request
+     * @return array|Factory|View
+     */
+    public function lineChartPM25(Request $request)
+    {
+        $data = [];
+        for ($i=0; $i < 10; $i++) { 
+            
+            $item = [
+                'category_id' => 3,
+                'category_name' => 'PM2.5',
+                'date' => now()->subDays($i)->format(DATE_FORMAT),
+                'total' => random_int(0, 500),
+            ];
+            
+            array_push($data, $item);
+        }
+
+        return response()->json($data);
+    }
+    /**
+     * Analytic of offers.
+     *
+     * @param Request $request
+     * @return array|Factory|View
+     */
+    public function lineChartPM4(Request $request)
+    {
+        $data = [];
+        for ($i=0; $i < 10; $i++) { 
+            
+            $item = [
+                'category_id' => 3,
+                'category_name' => 'PM4.0',
+                'date' => now()->subDays($i)->format(DATE_FORMAT),
+                'total' => random_int(0, 500),
+            ];
+            
+            array_push($data, $item);
+        }
+
+        return response()->json($data);
+    }
+    /**
+     * Analytic of offers.
+     *
+     * @param Request $request
+     * @return array|Factory|View
+     */
+    public function lineChartPM10(Request $request)
+    {
+        $data = [];
+        for ($i=0; $i < 10; $i++) { 
+            
+            $item = [
+                'category_id' => 3,
+                'category_name' => 'PM10',
+                'date' => now()->subDays($i)->format(DATE_FORMAT),
+                'total' => random_int(0, 500),
+            ];
+            
+            array_push($data, $item);
+        }
+
+        return response()->json($data);
+    }
+    /**
+     * Analytic of offers.
+     *
+     * @param Request $request
+     * @return array|Factory|View
+     */
+    public function lineChartTvoc(Request $request)
+    {
+        $data = [];
+        for ($i=0; $i < 10; $i++) { 
+            
+            $item = [
+                'category_id' => 3,
+                'category_name' => 'TVOC',
+                'date' => now()->subDays($i)->format(DATE_FORMAT),
+                'total' => random_int(0, 60000),
+            ];
+            
+            array_push($data, $item);
         }
 
         return response()->json($data);

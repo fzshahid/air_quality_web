@@ -5,31 +5,39 @@ import LineChart from "./LineChart";
 Vue.component("line-chart-container", {
   name: "line-chart-container",
   template: `
-  <div>
-    <template>
-      <div class="container">
-        <line-chart v-if="loaded && chartdata" :data="chartdata" :chartdata="chartdata" :options="options" />
-      </div>
-    </template>
-  </div>`,
+    <div>
+      <template>
+        <div class="container">
+          <line-chart v-if="loaded && chartdata" :data="chartdata" :chartdata="chartdata" :options="options" />
+        </div>
+      </template>
+    </div>`,
   components: { LineChart },
 
   props: {
     dataUrl: {
       type: String,
-      require: true,
+      required: true,
     },
     title: {
       type: String,
-      require: true,
+      required: true,
     },
     startDate: {
       type: String,
-      require: true,
+      required: true,
     },
     endDate: {
       type: String,
-      require: true,
+      required: true,
+    },
+    xAxisLabel: {
+      type: String,
+      required: true,
+    },
+    yAxisLabel: {
+      type: String,
+      required: true,
     },
   },
   data: () => ({
@@ -45,56 +53,35 @@ Vue.component("line-chart-container", {
         },
         title: {
           display: true,
-          text: 'Custom Chart Title',
+          text: '',
           font: { 
-            // weight: 'fett', 
             size: 18 
-        } ,
+          },
           padding: {
-              top: 10,
-              bottom: 30
+            top: 10,
+            bottom: 30
           }
         },
-      },
-      title: {
-        display: true,
-        text: ""
+        legend: {
+          display: true,
+        },
       },
       scales: {
         y: {
           title: {
-            text: 'AQI',
+            text: '',
             display: true,
           },
           ticks: {
             beginAtZero: true,
-            // stepSize: 1,
           },
-          // gridLines: {
-          //   display: true
-          // },
-          // scaleLabel: {
-          //   display: true,
-          //   labelString: 'Y Axis Label'
-          // }
         },
         x: {
           title: {
-            text: 'Hours',
+            text: '',
             display: true,
           },
-          
-          // gridLines: {
-          //   display: false
-          // },
-          // scaleLabel: {
-          //   display: true,
-          //   labelString: 'X Axis Label'
-          // }
         }
-      },
-      legend: {
-        display: true,
       },
       responsive: true,
       maintainAspectRatio: true
@@ -102,18 +89,14 @@ Vue.component("line-chart-container", {
   }),
   async mounted() {
     this.loaded = false;
-    this.options.title = this.title;
+    this.options.plugins.title.text = this.title;
+    this.options.scales.x.title.text = this.xAxisLabel;
+    this.options.scales.y.title.text = this.yAxisLabel;
     await this.loadData();
   },
   watch: {
-    startDate: async function (newForm, oldForm) {
-      this.resetState();
-      await this.loadData();
-    },
-    endDate: async function (newForm, oldForm) {
-      this.resetState();
-      await this.loadData();
-    },
+    startDate: 'loadData',
+    endDate: 'loadData',
   },
   methods: {
     hexToRgbA(hex, alpha) {
@@ -143,22 +126,18 @@ Vue.component("line-chart-container", {
     resetState() {
       this.loaded = false;
     },
-    loadData: async function () {
+    async loadData() {
       try {
-        const userlist = await axios.get(
-          this.dataUrl +
-          `?start_date=${this.startDate}&end_date=${this.endDate}`
+        const response = await axios.get(
+          `${this.dataUrl}?start_date=${this.startDate}&end_date=${this.endDate}`
         );
 
-        const labels = _.uniqBy(userlist.data, (elem) => elem.date).map(elem => elem.date);
-        const categories = _.uniqBy(
-          userlist.data,
-          (elem) => elem.category_name
-        );
+        const userlist = response.data;
+        const labels = _.uniqBy(userlist, 'date').map(elem => elem.date);
+        const categories = _.uniqBy(userlist, 'category_name');
 
-        let totalDataPoints = [];
-        labels.forEach((label, ind) => {
-          totalDataPoints.push(_.sumBy(userlist.data, (elem) => elem.date == label ? elem.total : 0));
+        let totalDataPoints = labels.map(label => {
+          return _.sumBy(userlist, elem => elem.date === label ? elem.total : 0);
         });
 
         let totalDataSet = {
@@ -169,23 +148,16 @@ Vue.component("line-chart-container", {
 
         let dataSets = [totalDataSet];
 
-        categories.forEach((category, key) => {
-          let categoryData = userlist.data
-            .filter((item) => item.category_name == category.category_name)
-            .map((item) => item.total);
+        categories.forEach(category => {
+          let categoryData = userlist
+            .filter(item => item.category_name === category.category_name)
+            .map(item => item.total);
 
           dataSets.push({
             label: category.category_name,
             data: categoryData,
-            // borderWidth: 1,
             fill: true,
             tension: 0.1,
-            // fillColor: "rgba(151,187,205,0.2)",
-            // strokeColor: "rgba(151,187,205,1)",
-            // pointColor: "rgba(151,187,205,1)",
-            // pointStrokeColor: "#fff",
-            // pointHighlightFill: "#fff",
-            // pointHighlightStroke: "rgba(151,187,205,1)",
             borderColor: this.stringToColour(category.category_name, 0.8),
           });
         });
@@ -195,8 +167,8 @@ Vue.component("line-chart-container", {
           datasets: dataSets,
         };
         this.loaded = true;
-      } catch (e) {
-        console.error(e);
+      } catch (error) {
+        console.error(error);
       }
     },
   },

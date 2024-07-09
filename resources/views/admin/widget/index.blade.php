@@ -115,7 +115,7 @@
                                     <template  v-for="(value, key) in aqiData" >
                                         <div class="measurement" @click="switchChart(keyLabels[key])" :key="key">
                                             <label>@{{ keyLabels[key].label }}:</label>
-                                            <span>@{{ value }}</span>
+                                            <span>@{{ value }} @{{ keyLabels[key].unit }}</span>
                                         </div>
                                     </template>
                                     <div class="advisory" v-if="aqiData.humidity > 60">
@@ -152,7 +152,7 @@
                     </div>
                     <div class="col-md-9 col-xs-12 align-self-center">
                         <div class="card">
-                            <line-chart-container :key="chartKey" :data-url="selectedItem.url" :title="selectedItem.label" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
+                            <line-chart-container :key="chartKey" :data-url="selectedItem.url" :title="selectedItem.label" :x-axis-label="selectedItem.xLabel" :y-axis-label="selectedItem.yLabel" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
                         </div>
                     </div>
                 </div>

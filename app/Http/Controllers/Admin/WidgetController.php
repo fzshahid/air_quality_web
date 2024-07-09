@@ -61,9 +61,15 @@ class WidgetController extends Controller
             'humidity' => 45,
             'temperature' => 22.5,
             'pm1_5' => 12,
+            'pm2_5' => 12,
+            'pm4' => 12,
             'pm10' => 18,
             'tvoc' => 450,
-            'co2' => 1001
+            'co2' => 1001,
+            'eco2' => 1001,
+            'tvoc' => 1001,
+            'all' => 0,
+
         ];
         return response()->json(['data' => $data]);
     }
