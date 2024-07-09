@@ -1,5 +1,21 @@
-import _ from 'lodash'
-import { Line } from 'vue-chartjs'
+import _ from 'lodash';
+import { Line } from 'vue-chartjs';
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  plugins,
+  Colors,
+  Filler
+} from 'chart.js';
+
+// Register Chart.js components
+ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement, Colors, Filler);
 
 export default {
   extends: Line,
@@ -10,78 +26,87 @@ export default {
     },
     options: {
       type: Object,
-      default: {
-        options: {
-
-          scales: {
-            yAxes: [{
-              ticks: {
-                beginAtZero: true
-              },
-              gridLines: {
-                display: false
-              }
-            }],
-            xAxes: [{
-              gridLines: {
-                display: false
-              }
-            }]
-          },
-          legend: {
-            display: true
-          },
-          responsive: true,
-          maintainAspectRatio: false
-        }
-
-      }
+      default: () => ({
+        plugins: {
+          customCanvasBackgroundColor: {
+            color: 'lightGreen',
+          }
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            },
+            gridLines: {
+              display: false
+            },
+            // scaleLabel: {
+            //   display: true,
+            //   labelString: 'Y Axis Label'
+            // }
+          }],
+          xAxes: [{
+            gridLines: {
+              display: false
+            },
+            // scaleLabel: {
+            //   display: true,
+            //   labelString: 'X Axis Label'
+            // }
+          }]
+        },
+        legend: {
+          display: true
+        },
+        responsive: true,
+        maintainAspectRatio: false
+      })
     }
   },
   methods: {
-    hexToRgbA(hex, aplha) {
-      var c;
-      if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
-        c = hex.substring(1).split('');
-        if (c.length == 3) {
-          c = [c[0], c[0], c[1], c[1], c[2], c[2]];
-        }
-        c = '0x' + c.join('');
-        return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + `,${aplha})`;
-      }
-      throw new Error('Bad Hex');
-    },
-    stringToColour(str, aplha) {
-      var hash = 0;
-      for (var i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-      }
-      var colour = '#';
-      for (var i = 0; i < 3; i++) {
-        // var value = (hash >> (i * 8));
-        var value = (hash >> (i * 10)) & 0xFF;
-        colour += ('00' + value.toString(16)).substr(-2);
-      }
-      return this.hexToRgbA(colour, aplha);
-    }
+
   },
   mounted() {
-    this.chartdata.datasets = this.chartdata.datasets.map(elem => {
+    // const ctx = this.$refs.canvas.getContext('2d');
+    // this.chartdata.datasets = this.chartdata.datasets.map(elem => {
+    //   const color = this.stringToColour(elem.label, 0.5);
+    //   const gradient = ctx.createLinearGradient(0, 0, 0, 450);
+    //   gradient.addColorStop(0, this.stringToColour(elem.label, 0.5));
+    //   gradient.addColorStop(0.5, this.stringToColour(elem.label, 0.25));
+    //   gradient.addColorStop(1, this.stringToColour(elem.label, 0));
+    //   elem.backgroundColor = gradient;
+    //   // elem.borderColor = color;
+    //   return elem;
+    // });
+    // this.renderChart(this.chartdata, this.options);
 
-      const color = this.stringToColour(elem.label, 0.5);
-      // const bgColor = this.stringToColour(category.category_name, 0.3);
+  },
+  plugins: [
+    {
+      id: 'customCanvasBackgroundColor',
+      beforeDraw: (chart, args, options) => {
+        // const { ctx } = chart;
+        // ctx.save();
+        // ctx.globalCompositeOperation = 'destination-over';
+        // ctx.fillStyle = options.color;
+        // ctx.fillRect(0, 0, chart.width, chart.height);
+        // ctx.restore();
 
-      let gradient = this.$refs.canvas.getContext('2d').createLinearGradient(0, 0, 0, 450)
-
-      gradient.addColorStop(0, this.stringToColour(elem.label, 0.5));
-      gradient.addColorStop(0.5, this.stringToColour(elem.label, 0.25));
-      gradient.addColorStop(1, this.stringToColour(elem.label, 0));
-
-      elem.backgroundColor = gradient;
-      elem.borderColor = color;
-      return elem;
-
-    });
-    this.renderChart(this.chartdata, this.options)
-  }
-}
+        // this.chartdata.datasets = this.chartdata.datasets.map(elem => {
+        //   const color = this.stringToColour(elem.label, 0.5);
+        //   const gradient = ctx.createLinearGradient(0, 0, 0, 450);
+        //   gradient.addColorStop(0, this.stringToColour(elem.label, 0.5));
+        //   gradient.addColorStop(0.5, this.stringToColour(elem.label, 0.25));
+        //   gradient.addColorStop(1, this.stringToColour(elem.label, 0));
+        //   elem.backgroundColor = gradient;
+        //   // elem.borderColor = color;
+        //   return elem;
+        // });
+        // this.renderChart(this.chartdata, this.options);
+      },
+      defaults: {
+        color: 'lightGreen'
+      }
+    }
+  ]
+};

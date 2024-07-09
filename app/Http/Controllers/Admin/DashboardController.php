@@ -47,25 +47,25 @@ class DashboardController extends Controller
      * @param Request $request
      * @return array|Factory|View
      */
-    public function temperatureLineChart(Request $request)
-    {
-        $start_date = $request->get('start_date', now()->subDays(7)->format(DATE_FORMAT));
-        $end_date = $request->get('end_date', now()->format(DATE_FORMAT));
-        $analytics = $this->scd41Reading
-        // ->active()
-        ->whereDate('created_at', '>=', $start_date)
-        ->whereDate('created_at', '<=', $end_date)
-        ->groupByRaw('DATE(created_at)')
-        ->selectRaw('DATE(created_at) as created_at_date, SUM(temperature) AS total')
-        ->pluck('total', 'created_at_date');
-        $ranges = CarbonPeriod::create($start_date, $end_date);
-        $data = [];
-        foreach ($ranges as $date) {
-            $created_date = $date->format(DATE_FORMAT);
-            $data[$created_date] = isset($analytics[$created_date]) ? $analytics[$created_date] : 0;
-        }
-        return response()->json($data);
-    }
+    // public function temperatureLineChart(Request $request)
+    // {
+    //     $start_date = $request->get('start_date', now()->subDays(7)->format(DATE_FORMAT));
+    //     $end_date = $request->get('end_date', now()->format(DATE_FORMAT));
+    //     $analytics = $this->scd41Reading
+    //     // ->active()
+    //     ->whereDate('created_at', '>=', $start_date)
+    //     ->whereDate('created_at', '<=', $end_date)
+    //     ->groupByRaw('DATE(created_at)')
+    //     ->selectRaw('DATE(created_at) as created_at_date, SUM(temperature) AS total')
+    //     ->pluck('total', 'created_at_date');
+    //     $ranges = CarbonPeriod::create($start_date, $end_date);
+    //     $data = [];
+    //     foreach ($ranges as $date) {
+    //         $created_date = $date->format(DATE_FORMAT);
+    //         $data[$created_date] = isset($analytics[$created_date]) ? $analytics[$created_date] : 0;
+    //     }
+    //     return response()->json($data);
+    // }
     
     /**
      * Display a listing of the resource.
@@ -160,21 +160,108 @@ class DashboardController extends Controller
                 'category_id' => 2,
                 'category_name' => 'Humidity',
                 'date' => now()->subDays($i)->format(DATE_FORMAT),
-                'total' => random_int(0, 50),
+                'total' => random_int(0, 100),
             ];
             $pm2_5 = [
                 'category_id' => 3,
                 'category_name' => 'PM2.5',
                 'date' => now()->subDays($i)->format(DATE_FORMAT),
-                'total' => random_int(0, 50),
+                'total' => random_int(0, 500),
             ];
             $pm10 = [
                 'category_id' => 4,
                 'category_name' => 'PM10',
                 'date' => now()->subDays($i)->format(DATE_FORMAT),
+                'total' => random_int(0, 500),
+            ];
+            $co2 = [
+                'category_id' => 4,
+                'category_name' => 'CO2',
+                'date' => now()->subDays($i)->format(DATE_FORMAT),
+                'total' => random_int(400, 5000),
+            ];
+            array_push($data, $temp, $humid, $pm2_5, $pm10, $co2);
+        }
+
+        return response()->json($data);
+    }
+
+    /**
+     * Analytic of offers.
+     *
+     * @param Request $request
+     * @return array|Factory|View
+     */
+    public function temperatureLineChart(Request $request)
+    {
+        $data = [];
+        for ($i=0; $i < 10; $i++) { 
+            $temp = [
+                'category_id' => 1,
+                'category_name' => 'Temperature',
+                'date' => now()->subDays($i)->format(DATE_FORMAT),
                 'total' => random_int(0, 50),
             ];
-            array_push($data, $temp, $humid, $pm2_5, $pm10);
+            // $humid = [
+            //     'category_id' => 2,
+            //     'category_name' => 'Humidity',
+            //     'date' => now()->subDays($i)->format(DATE_FORMAT),
+            //     'total' => random_int(0, 50),
+            // ];
+            // $pm2_5 = [
+            //     'category_id' => 3,
+            //     'category_name' => 'PM2.5',
+            //     'date' => now()->subDays($i)->format(DATE_FORMAT),
+            //     'total' => random_int(0, 50),
+            // ];
+            // $pm10 = [
+            //     'category_id' => 4,
+            //     'category_name' => 'PM10',
+            //     'date' => now()->subDays($i)->format(DATE_FORMAT),
+            //     'total' => random_int(0, 50),
+            // ];
+            // array_push($data, $temp);
+            array_push($data, $temp);
+        }
+
+        return response()->json($data);
+    }
+    /**
+     * Analytic of offers.
+     *
+     * @param Request $request
+     * @return array|Factory|View
+     */
+    public function lineChartCarbon(Request $request)
+    {
+        $data = [];
+        for ($i=0; $i < 10; $i++) { 
+            // $temp = [
+            //     'category_id' => 1,
+            //     'category_name' => 'Temperature',
+            //     'date' => now()->subDays($i)->format(DATE_FORMAT),
+            //     'total' => random_int(0, 50),
+            // ];
+            // $humid = [
+            //     'category_id' => 2,
+            //     'category_name' => 'Humidity',
+            //     'date' => now()->subDays($i)->format(DATE_FORMAT),
+            //     'total' => random_int(0, 50),
+            // ];
+            // $pm2_5 = [
+            //     'category_id' => 3,
+            //     'category_name' => 'PM2.5',
+            //     'date' => now()->subDays($i)->format(DATE_FORMAT),
+            //     'total' => random_int(0, 50),
+            // ];
+            // $pm10 = [
+            //     'category_id' => 4,
+            //     'category_name' => 'PM10',
+            //     'date' => now()->subDays($i)->format(DATE_FORMAT),
+            //     'total' => random_int(0, 50),
+            // ];
+            // array_push($data, $temp);
+            // array_push($data, $pm2_5);
         }
 
         return response()->json($data);

@@ -8,7 +8,7 @@ Vue.component("line-chart-container", {
   <div>
     <template>
       <div class="container">
-        <line-chart v-if="loaded" :chartdata="chartdata" :options="options" />
+        <line-chart v-if="loaded && chartdata" :data="chartdata" :chartdata="chartdata" :options="options" />
       </div>
     </template>
   </div>`,
@@ -36,31 +36,68 @@ Vue.component("line-chart-container", {
     loaded: false,
     chartdata: null,
     options: {
+      plugins: {
+        customCanvasBackgroundColor: {
+          color: 'lightGreen',
+        },
+        colors: {
+          enabled: false
+        },
+        title: {
+          display: true,
+          text: 'Custom Chart Title',
+          font: { 
+            // weight: 'fett', 
+            size: 18 
+        } ,
+          padding: {
+              top: 10,
+              bottom: 30
+          }
+        },
+      },
       title: {
         display: true,
         text: ""
       },
       scales: {
-        yAxes: [{
+        y: {
+          title: {
+            text: 'AQI',
+            display: true,
+          },
           ticks: {
             beginAtZero: true,
-            stepSize: 1,
+            // stepSize: 1,
           },
-          gridLines: {
-            display: true
-          }
-        }],
-        xAxes: [{
-          gridLines: {
-            display: false
-          }
-        }]
+          // gridLines: {
+          //   display: true
+          // },
+          // scaleLabel: {
+          //   display: true,
+          //   labelString: 'Y Axis Label'
+          // }
+        },
+        x: {
+          title: {
+            text: 'Hours',
+            display: true,
+          },
+          
+          // gridLines: {
+          //   display: false
+          // },
+          // scaleLabel: {
+          //   display: true,
+          //   labelString: 'X Axis Label'
+          // }
+        }
       },
       legend: {
-        display: true
+        display: true,
       },
       responsive: true,
-      maintainAspectRatio: false
+      maintainAspectRatio: true
     },
   }),
   async mounted() {
@@ -79,9 +116,32 @@ Vue.component("line-chart-container", {
     },
   },
   methods: {
+    hexToRgbA(hex, alpha) {
+      var c;
+      if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+        c = hex.substring(1).split('');
+        if (c.length == 3) {
+          c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+        }
+        c = '0x' + c.join('');
+        return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + `,${alpha})`;
+      }
+      throw new Error('Bad Hex');
+    },
+    stringToColour(str, alpha) {
+      var hash = 0;
+      for (var i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      var colour = '#';
+      for (var i = 0; i < 3; i++) {
+        var value = (hash >> (i * 10)) & 0xFF;
+        colour += ('00' + value.toString(16)).substr(-2);
+      }
+      return this.hexToRgbA(colour, alpha);
+    },
     resetState() {
       this.loaded = false;
-      // this.showError = false;
     },
     loadData: async function () {
       try {
@@ -89,6 +149,7 @@ Vue.component("line-chart-container", {
           this.dataUrl +
           `?start_date=${this.startDate}&end_date=${this.endDate}`
         );
+
         const labels = _.uniqBy(userlist.data, (elem) => elem.date).map(elem => elem.date);
         const categories = _.uniqBy(
           userlist.data,
@@ -116,7 +177,16 @@ Vue.component("line-chart-container", {
           dataSets.push({
             label: category.category_name,
             data: categoryData,
-            borderWidth: 1,
+            // borderWidth: 1,
+            fill: true,
+            tension: 0.1,
+            // fillColor: "rgba(151,187,205,0.2)",
+            // strokeColor: "rgba(151,187,205,1)",
+            // pointColor: "rgba(151,187,205,1)",
+            // pointStrokeColor: "#fff",
+            // pointHighlightFill: "#fff",
+            // pointHighlightStroke: "rgba(151,187,205,1)",
+            borderColor: this.stringToColour(category.category_name, 0.8),
           });
         });
 
@@ -124,7 +194,6 @@ Vue.component("line-chart-container", {
           labels: labels,
           datasets: dataSets,
         };
-        // this.options = null;
         this.loaded = true;
       } catch (e) {
         console.error(e);
@@ -132,6 +201,3 @@ Vue.component("line-chart-container", {
     },
   },
 });
-// Vue.component("line-chart-container", LineChartContainer);
-// export default LineChartContainer;
-// </script>

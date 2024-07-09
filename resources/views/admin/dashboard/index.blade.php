@@ -31,12 +31,12 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
-                    <line-chart-container :data-url="'{{ url('dashboard/line-chart-all') }}'" :title="'PM2.5 and AQI'" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
+                    <!-- <line-chart-container :data-url="'{{ url('dashboard/line-chart-pm') }}'" :title="'PM2.5 and AQI'" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container> -->
                 </div>
             </div>
             <div class="col-sm-12">
                 <div class="card">
-                    <line-chart-container :data-url="'{{ url('dashboard/line-chart-humitdity') }}'" :title="'PM10 and AQI'" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
+                    <line-chart-container :data-url="'{{ url('dashboard/temperature-line-chart') }}'" :title="'Temperature'" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
                 </div>
             </div>
             <div class="col-sm-12">

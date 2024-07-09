@@ -3,18 +3,55 @@ Vue.component('widget', {
     props: {  },
     data: function () {
         return {
+            form: {
+                startDate: moment().subtract('7', 'days').format('YYYY-MM-DD'),
+                endDate: moment().format('YYYY-MM-DD'),
+            },
+            isLoading: false,
             // data: @json($data),
             keyLabels: {
-                humidity: 'Humidity',
-                temperature: 'Temperature',
-                pm1_5: 'PM1.5',
-                pm10: 'PM10',
-                tvoc: 'TVOC',
-                co2: 'CO₂'
+                humidity: {
+                    label: 'Humidity',
+                    url: 'dashboard/line-chart-co-2',
+                    xLabel: 'Time',
+                    yLabel: 'Percentage',
+                },
+                temperature: {
+                    label:  'Temperature',
+                    url: 'dashboard/line-chart-co-2',
+                    xLabel: 'Time',
+                    yLabel: 'Celcius',
+                },
+                pm1_5: {
+                    label:  'PM1.5',
+                    url: 'dashboard/line-chart-co-2',
+                    xLabel: 'Time',
+                    yLabel: 'Parts per billion',
+                },
+                pm10: {
+                    label:  'PM10',
+                    url: 'dashboard/line-chart-co-2',
+                    xLabel: 'Time',
+                    yLabel: 'Parts per billion',
+                },
+                tvoc: {
+                    label:  'TVOC',
+                    url: 'dashboard/line-chart-co-2',
+                    xLabel: 'Time',
+                    yLabel: 'Parts per billion',
+                },
+                co2: {
+                    label:  'CO₂',
+                    url: 'dashboard/line-chart-co-2',
+                    xLabel: 'Time',
+                    yLabel: 'Parts per billion',
+                },
             },
             showModal: false,
             email: '',
             aqiData: {},
+            selectedItem: {},
+            chartKey: +new Date(),
         }
     },
     async mounted() {
@@ -34,13 +71,17 @@ Vue.component('widget', {
         }
     },
     methods: {
+        switchChart(item) {
+            this.selectedItem = item;
+            this.chartKey++;
+        },
         loadData: async function () {
             try {
                 const apiUrl = "/api/get-widget-data";
                 const data = await axios.get(
                     apiUrl
                 );
-                debugger
+                
                 this.aqiData = data.data.data;
                 this.loaded = true;
             } catch (e) {
