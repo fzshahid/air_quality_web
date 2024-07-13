@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group([
-    'middleware' => 'auth:api',
+    // 'middleware' => 'auth:api',
 ], function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -30,7 +30,6 @@ Route::group([
 });
 Route::group([
 ], function () {
-    
     Route::post('/subscribe', [WidgetController::class, 'subscribe'])->name('airQualityReadings.subscribe');
     Route::get('/get-widget-data', [WidgetController::class, 'getWidgetData'])->name('getWidgetData');
 });

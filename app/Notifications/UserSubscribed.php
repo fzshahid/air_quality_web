@@ -43,7 +43,7 @@ class UserSubscribed extends Notification
         return (new MailMessage)
                     ->subject('AQI Alerts Subscribed Successfully!')
                     ->line('Congratulation, you have successfully subscribed to the Indoor Air Quality Monitoring System.')
-                    ->line('We will notify you, in case air quality in your room worsens.');
+                    ->line('You will receive the notification about AQI');
                     // ->action('Notification Action', url('/'))
                     // ->line('Thank you for using our application');
     }

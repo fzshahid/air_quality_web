@@ -11,6 +11,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\View\View;
+use App\Models\AirQualityReading;
+use DB;
 
 class DashboardController extends Controller
 {
@@ -149,46 +151,47 @@ class DashboardController extends Controller
     public function lineChartCo2(Request $request)
     {
         $data = [];
-        for ($i=0; $i < 10; $i++) { 
-            $temp = [
-                'category_id' => 1,
-                'category_name' => 'Temperature',
-                'date' => now()->subDays($i)->format(DATE_FORMAT),
-                'total' => random_int(0, 50),
-            ];
-            $humid = [
-                'category_id' => 2,
-                'category_name' => 'Humidity',
-                'date' => now()->subDays($i)->format(DATE_FORMAT),
-                'total' => random_int(0, 100),
-            ];
-            $pm2_5 = [
-                'category_id' => 3,
-                'category_name' => 'PM2.5',
-                'date' => now()->subDays($i)->format(DATE_FORMAT),
-                'total' => random_int(0, 500),
-            ];
-            $pm10 = [
-                'category_id' => 4,
-                'category_name' => 'PM10',
-                'date' => now()->subDays($i)->format(DATE_FORMAT),
-                'total' => random_int(0, 500),
-            ];
-            $co2 = [
-                'category_id' => 4,
-                'category_name' => 'CO2',
-                'date' => now()->subDays($i)->format(DATE_FORMAT),
-                'total' => random_int(0, 5000),
-            ];
-            $eco2 = [
-                'category_id' => 5,
-                'category_name' => 'eCO2',
-                'date' => now()->subDays($i)->format(DATE_FORMAT),
-                'total' => random_int(400, 5000),
-            ];
-            array_push($data, $temp, $humid, $pm2_5, $pm10, $co2, $eco2);
-        }
+        // for ($i=0; $i < 10; $i++) { 
+        //     $temp = [
+        //         'category_id' => 1,
+        //         'category_name' => 'Temperature',
+        //         'date' => now()->subDays($i)->format(DATE_FORMAT),
+        //         'total' => random_int(0, 50),
+        //     ];
+        //     $humid = [
+        //         'category_id' => 2,
+        //         'category_name' => 'Humidity',
+        //         'date' => now()->subDays($i)->format(DATE_FORMAT),
+        //         'total' => random_int(0, 100),
+        //     ];
+        //     $pm2_5 = [
+        //         'category_id' => 3,
+        //         'category_name' => 'PM2.5',
+        //         'date' => now()->subDays($i)->format(DATE_FORMAT),
+        //         'total' => random_int(0, 500),
+        //     ];
+        //     $pm10 = [
+        //         'category_id' => 4,
+        //         'category_name' => 'PM10',
+        //         'date' => now()->subDays($i)->format(DATE_FORMAT),
+        //         'total' => random_int(0, 500),
+        //     ];
+        //     $co2 = [
+        //         'category_id' => 4,
+        //         'category_name' => 'CO2',
+        //         'date' => now()->subDays($i)->format(DATE_FORMAT),
+        //         'total' => random_int(0, 5000),
+        //     ];
+        //     $eco2 = [
+        //         'category_id' => 5,
+        //         'category_name' => 'eCO2',
+        //         'date' => now()->subDays($i)->format(DATE_FORMAT),
+        //         'total' => random_int(400, 5000),
+        //     ];
+        //     array_push($data, $temp, $humid, $pm2_5, $pm10, $co2, $eco2);
+        // }
 
+        $data = $this->getHourlyCO2Rate(24);
         return response()->json($data);
     }
 
@@ -409,5 +412,58 @@ class DashboardController extends Controller
         }
 
         return response()->json($data);
+    }
+
+
+    public function getHourlyCO2Rate($hours)
+    {
+        $now = now();
+        $startTime = $now->copy()->subHours($hours);
+
+        $co2Rates = AirQualityReading::select(
+                DB::raw('AVG(co2) as avg_co2'),
+                DB::raw('HOUR(created_at) as hour')
+            )
+            ->whereBetween('created_at', [$startTime, $now])
+            ->groupBy(DB::raw('HOUR(created_at)'))
+            ->get();
+
+        $resp = [];
+        foreach ($co2Rates as $key => $value) {
+            $co2 = [
+                'category_name' => 'CO2',
+                'date' => $value->hour,
+                'total' => round($value->avg_co2),
+            ];
+            array_push($resp, $co2);
+        }
+
+        return ($resp);
+    }
+
+    public function getDailyCO2Rate($days)
+    {
+        $now = Carbon::now();
+        $startTime = $now->copy()->subDays($days);
+
+        $co2Rates = AirQualityReading::select(
+                DB::raw('AVG(co2) as avg_co2'),
+                DB::raw('DATE(created_at) as date')
+            )
+            ->whereBetween('created_at', [$startTime, $now])
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->get();
+
+        return response()->json($co2Rates);
+    }
+
+    public function getWeeklyCO2Rate()
+    {
+        return $this->getDailyCO2Rate(7);
+    }
+
+    public function getMonthlyCO2Rate()
+    {
+        return $this->getDailyCO2Rate(30);
     }
 }

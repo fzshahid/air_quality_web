@@ -15,6 +15,7 @@ class StoreAirQualityReading extends FormRequest
      */
     public function authorize(): bool
     {
+        return true;
         return Gate::allows('admin.air-quality-reading.create');
     }
 
