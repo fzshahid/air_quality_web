@@ -3,32 +3,24 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Services\AirQualityReadingsService;
 use App\Models\AirQualityReading;
-use App\Models\Ccs811Reading;
-use App\Models\Scd41Reading;
-use App\Models\Sps30Reading;
 use App\Models\Subscriber;
 use App\Notifications\UserSubscribed;
-use Carbon\CarbonPeriod;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\View\View;
 
 class WidgetController extends Controller
 {
-    protected $sps30Reading, $ccs811Reading, $scd41Reading;
+    protected $airQualityReadingsService;
 
     /**
      *
-     * @param Sps30Reading $sps30Reading
-     * @param Ccs811Reading $ccs811Reading
-     * @param Scd41Reading $scd41Reading
+     * @param AirQualityReadingsService $airQualityReadingsService
      */
-    public function __construct(Sps30Reading $sps30Reading, Ccs811Reading $ccs811Reading, Scd41Reading $scd41Reading) {
-        $this->sps30Reading = $sps30Reading;
-        $this->ccs811Reading = $ccs811Reading;
-        $this->scd41Reading = $scd41Reading;
+    public function __construct(AirQualityReadingsService $airQualityReadingsService) {
+        $this->airQualityReadingsService = $airQualityReadingsService;
     }
 
     /**
@@ -53,21 +45,24 @@ class WidgetController extends Controller
     {
         $airQualityReading = AirQualityReading::query()->latest()->first();
 
-        $airQualityReading = [
+        $data = [
             'humidity' => $airQualityReading->humidity,
             'temperature' => $airQualityReading->temperature,
-            'pm1_5' => $airQualityReading->pm1_0,
+            // 'pm1_5' => $airQualityReading->pm1_0,
             'pm2_5' => $airQualityReading->pm2_5,
-            'pm4' => $airQualityReading->pm4,
+            // 'pm4' => $airQualityReading->pm4,
             'pm10' => $airQualityReading->pm10,
             'tvoc' => $airQualityReading->tvoc,
             'co2' => $airQualityReading->co2,
-            'eco2' => $airQualityReading->eco2,
+            // 'eco2' => $airQualityReading->eco2,
             'tvoc' => $airQualityReading->tvoc,
-            'all' => '',
-
+            // 'all' => '',
         ];
-        return response()->json(['data' => $airQualityReading]);
+
+
+        $messages = $this->airQualityReadingsService->checkVentilationNeed($airQualityReading);
+        $aqiIndex = $this->airQualityReadingsService->calculateAqiIndex($airQualityReading);
+        return response()->json(['data' => $data, 'messages' => $messages, 'aqi_index' => $aqiIndex]);
     }
 
     public function subscribe(Request $request)

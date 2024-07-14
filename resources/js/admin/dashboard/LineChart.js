@@ -67,42 +67,11 @@ export default {
 
   },
   mounted() {
-    // const ctx = this.$refs.canvas.getContext('2d');
-    // this.chartdata.datasets = this.chartdata.datasets.map(elem => {
-    //   const color = this.stringToColour(elem.label, 0.5);
-    //   const gradient = ctx.createLinearGradient(0, 0, 0, 450);
-    //   gradient.addColorStop(0, this.stringToColour(elem.label, 0.5));
-    //   gradient.addColorStop(0.5, this.stringToColour(elem.label, 0.25));
-    //   gradient.addColorStop(1, this.stringToColour(elem.label, 0));
-    //   elem.backgroundColor = gradient;
-    //   // elem.borderColor = color;
-    //   return elem;
-    // });
-    // this.renderChart(this.chartdata, this.options);
-
   },
   plugins: [
     {
       id: 'customCanvasBackgroundColor',
       beforeDraw: (chart, args, options) => {
-        // const { ctx } = chart;
-        // ctx.save();
-        // ctx.globalCompositeOperation = 'destination-over';
-        // ctx.fillStyle = options.color;
-        // ctx.fillRect(0, 0, chart.width, chart.height);
-        // ctx.restore();
-
-        // this.chartdata.datasets = this.chartdata.datasets.map(elem => {
-        //   const color = this.stringToColour(elem.label, 0.5);
-        //   const gradient = ctx.createLinearGradient(0, 0, 0, 450);
-        //   gradient.addColorStop(0, this.stringToColour(elem.label, 0.5));
-        //   gradient.addColorStop(0.5, this.stringToColour(elem.label, 0.25));
-        //   gradient.addColorStop(1, this.stringToColour(elem.label, 0));
-        //   elem.backgroundColor = gradient;
-        //   // elem.borderColor = color;
-        //   return elem;
-        // });
-        // this.renderChart(this.chartdata, this.options);
       },
       defaults: {
         color: 'lightGreen'

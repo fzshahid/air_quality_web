@@ -23,13 +23,13 @@ Vue.component('widget', {
                     yLabel: 'Celcius',
                     unit: '°C',
                 },
-                pm1_5: {
-                    label: 'PM1',
-                    url: 'dashboard/line-chart-pm-1',
-                    xLabel: 'Time',
-                    yLabel: 'µg/m³',
-                    unit: 'µg/m³',
-                },
+                // pm1_5: {
+                //     label: 'PM1',
+                //     url: 'dashboard/line-chart-pm-1',
+                //     xLabel: 'Time',
+                //     yLabel: 'µg/m³',
+                //     unit: 'µg/m³',
+                // },
                 pm2_5: {
                     label: 'PM2.5',
                     url: 'dashboard/line-chart-pm-2-5',
@@ -37,13 +37,13 @@ Vue.component('widget', {
                     yLabel: 'µg/m³',
                     unit: 'µg/m³',
                 },
-                pm4: {
-                    label: 'PM4',
-                    url: 'dashboard/line-chart-pm-4',
-                    xLabel: 'Time',
-                    yLabel: 'µg/m³',
-                    unit: 'µg/m³',
-                },
+                // pm4: {
+                //     label: 'PM4',
+                //     url: 'dashboard/line-chart-pm-4',
+                //     xLabel: 'Time',
+                //     yLabel: 'µg/m³',
+                //     unit: 'µg/m³',
+                // },
                 pm10: {
                     label: 'PM10',
                     url: 'dashboard/line-chart-pm-10',
@@ -65,20 +65,20 @@ Vue.component('widget', {
                     yLabel: 'Parts per million',
                     unit: 'ppm',
                 },
-                eco2: {
-                    label: 'eCO₂',
-                    url: 'dashboard/line-chart-co-2',
-                    xLabel: 'Time',
-                    yLabel: 'Parts per million',
-                    unit: 'ppm',
-                },
-                all: {
-                    label: 'All Metrices',
-                    url: 'dashboard/line-chart-all',
-                    xLabel: 'Time',
-                    yLabel: '',
-                    unit: '',
-                },
+                // eco2: {
+                //     label: 'eCO₂',
+                //     url: 'dashboard/line-chart-co-2',
+                //     xLabel: 'Time',
+                //     yLabel: 'Parts per million',
+                //     unit: 'ppm',
+                // },
+                // all: {
+                //     label: 'All Metrices',
+                //     url: 'dashboard/line-chart-all',
+                //     xLabel: 'Time',
+                //     yLabel: '',
+                //     unit: '',
+                // },
             },
             showModal: false,
             email: '',
@@ -86,6 +86,10 @@ Vue.component('widget', {
             selectedItem: {},
             chartKey: +new Date(),
             selectedOption: '24hrs',
+
+            aqiIndex: {},
+            messages: {},
+            selectedChartItem: 'pm2_5',
         }
     },
     async mounted() {
@@ -111,7 +115,7 @@ Vue.component('widget', {
     methods: {
         switchChart(item) {
             this.selectedItem = item;
-            this.chartKey++;
+            // this.chartKey++;
         },
         loadData: async function () {
             try {
@@ -119,6 +123,8 @@ Vue.component('widget', {
                 const data = await axios.get(apiUrl);
                 
                 this.aqiData = data.data.data;
+                this.messages = data.data.messages.messages;
+                this.aqiIndex = data.data.aqi_index;
                 this.loaded = true;
             } catch (e) {
                 console.error(e);

@@ -3,29 +3,12 @@
 namespace App\Http\Services;
 
 use App\Models\AirQualityReading;
-use App\Models\Ccs811Reading;
-use App\Models\Scd41Reading;
-use App\Models\Sps30Reading;
 use Carbon\Carbon;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use App\Http\Enums\DataCategoriesEnum;
 
 class AirQualityReadingsService
 {
-    
-    public function storeSps30(array $input) {
-        $reading = Sps30Reading::create($input);
-        return $reading;
-    }
-    public function storeScd41(array $input) {
-        $reading = Scd41Reading::create($input);
-        return $reading;
-    }
-    public function storeCcs811(array $input) {
-        $reading = Ccs811Reading::create($input);
-        return $reading;
-    }
 
     
     public function calculateAqiIndex(\App\Models\AirQualityReading $airQualityReading)
@@ -68,6 +51,7 @@ class AirQualityReadingsService
                 return [
                     'aqi' => round($aqi),
                     'tag' => $bp['tag'],
+                    'intensity' => $bp['intensity'],
                     'message' => $bp['message'],
                 ];
             }
@@ -92,6 +76,7 @@ class AirQualityReadingsService
                 "i_low" => 0,
                 "i_high" => 50,
                 'tag' => 'Good',
+                'intensity' => 0,
                 'message' => 'Air Quality is Good!'
             ],
             [
@@ -100,6 +85,7 @@ class AirQualityReadingsService
                 "i_low" => 51,
                 "i_high" => 100,
                 'tag' => 'Moderate',
+                'intensity' => 1,
                 'message' => 'Unusually sensitive people should consider reducing prolonged or heavy exertion.'
             ],
             [
@@ -108,6 +94,7 @@ class AirQualityReadingsService
                 "i_low" => 101,
                 "i_high" => 150,
                 'tag' => 'Unhealthy for Sensitive Groups',
+                'intensity' => 2,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should reduce prolonged or heavy exertion.'
             ],
             [
@@ -116,6 +103,7 @@ class AirQualityReadingsService
                 "i_low" => 151,
                 "i_high" => 200,
                 'tag' => 'Unhealthy',
+                'intensity' => 3,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should avoid prolonged or heavy exertion; everyone else should reduce prolonged or heavy exertion.'
             ],
             [
@@ -124,6 +112,7 @@ class AirQualityReadingsService
                 "i_low" => 201,
                 "i_high" => 300,
                 'tag' => 'Very Unhealthy',
+                'intensity' => 4,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should avoid all physical activity outdoors. Everyone else should avoid prolonged or heavy exertion.'
             ],
             [
@@ -132,6 +121,7 @@ class AirQualityReadingsService
                 "i_low" => 301,
                 "i_high" => 500,
                 'tag' => 'Hazardous',
+                'intensity' => 5,
                 'message' => 'Everyone should avoid all physical activity outdoors; people with heart or lung disease, older adults, children, and people of lower socioeconomic status should remain indoors and keep activity levels low.'
             ],
             // Add additional breakpoints as needed
@@ -150,6 +140,7 @@ class AirQualityReadingsService
                 "i_low" => 0,
                 "i_high" => 50,
                 'tag' => 'Good',
+                 0,
                 'message' => 'Air Quality is Good!'
             ],
             [
@@ -158,6 +149,7 @@ class AirQualityReadingsService
                 "i_low" => 51,
                 "i_high" => 100,
                 'tag' => 'Moderate',
+                'intensity' => 1,
                 'message' => 'Unusually sensitive people should consider reducing prolonged or heavy exertion.'
             ],
             [
@@ -166,6 +158,7 @@ class AirQualityReadingsService
                 "i_low" => 101,
                 "i_high" => 150,
                 'tag' => 'Unhealthy for Sensitive Groups',
+                'intensity' => 2,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should reduce prolonged or heavy exertion.'
             ],
             [
@@ -174,6 +167,7 @@ class AirQualityReadingsService
                 "i_low" => 151,
                 "i_high" => 200,
                 'tag' => 'Unhealthy',
+                'intensity' => 3,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should avoid prolonged or heavy exertion; everyone else should reduce prolonged or heavy exertion.'
             ],
             [
@@ -182,6 +176,7 @@ class AirQualityReadingsService
                 "i_low" => 201,
                 "i_high" => 300,
                 'tag' => 'Very Unhealthy',
+                'intensity' => 4,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should avoid all physical activity outdoors. Everyone else should avoid prolonged or heavy exertion.'
             ],
             [
@@ -190,20 +185,21 @@ class AirQualityReadingsService
                 "i_low" => 301,
                 "i_high" => 500,
                 'tag' => 'Hazardous',
+                'intensity' => 5,
                 'message' => 'Everyone should avoid all physical activity outdoors; people with heart or lung disease, older adults, children, and people of lower socioeconomic status should remain indoors and keep activity levels low.'
             ],
             // Add additional breakpoints as needed
         ];
     }
 
-    public function checkVentilationNeed(array $input)
+    public function checkVentilationNeed(\App\Models\AirQualityReading $airQualityReading)
     {
-        $co2 = $input['co2'];
-        $tvoc = $input['tvoc'];
-        $humidity = $input['humidity'];
-        $temperature = $input['temperature'];
-        $pm25 = $input['pm2_5'];
-        $pm10 = $input['pm10'];
+        $co2 = $airQualityReading->co2;
+        $tvoc = $airQualityReading->tvoc;
+        $humidity = $airQualityReading->humidity;
+        $temperature = $airQualityReading->temperature;
+        $pm25 = $airQualityReading->pm2_5;
+        $pm10 = $airQualityReading->pm10;
 
         $ventilationNeeded = false;
         $messages = [];
@@ -217,12 +213,12 @@ class AirQualityReadingsService
          */
         if ($co2 > 800) {
             $ventilationNeeded = true;
-            $messages[] = "High CO2 levels detected: {$co2} ppm. Ventilation needed.";
+            $messages[DataCategoriesEnum::CO2] = "High CO2 levels detected: {$co2} ppm. Ventilation needed.";
         }
 
         if ($tvoc > 1000) {
             $ventilationNeeded = true;
-            $messages[] = "High tvoc levels detected: {$tvoc} ppb. Ventilation needed.";
+            $messages[DataCategoriesEnum::TVOC] = "High tvoc levels detected: {$tvoc} ppb. Ventilation needed.";
         }
 
         /**
@@ -230,7 +226,7 @@ class AirQualityReadingsService
          */
         if ($humidity < 30 || $humidity > 50) {
             $ventilationNeeded = true;
-            $messages[] = "Uncomfortable humidity levels: {$humidity}%. Ventilation needed.";
+            $messages[DataCategoriesEnum::HUMIDITY] = "Uncomfortable humidity levels: {$humidity}%. Ventilation needed.";
         }
 
         /**
@@ -238,7 +234,7 @@ class AirQualityReadingsService
          */
         if ($pm25 > 35.4) {
             $ventilationNeeded = true;
-            $messages[] = "High PM2.5 levels detected: {$pm25} µg/m³. Ventilation needed.";
+            $messages[DataCategoriesEnum::PM2_5] = "High PM2.5 levels detected: {$pm25} µg/m³. Ventilation needed.";
         }
 
         /**
@@ -246,7 +242,7 @@ class AirQualityReadingsService
          */
         if ($pm10 > 154) {
             $ventilationNeeded = true;
-            $messages[] = "High PM10 levels detected: {$pm10} µg/m³. Ventilation needed.";
+            $messages[DataCategoriesEnum::PM10] = "High PM10 levels detected: {$pm10} µg/m³. Ventilation needed.";
         }
 
         return [

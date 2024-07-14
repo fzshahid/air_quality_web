@@ -7,7 +7,7 @@ Vue.component("line-chart-container", {
   template: `
     <div>
       <template>
-        <div class="container">
+        <div class="">
           <line-chart v-if="loaded && chartdata" :data="chartdata" :chartdata="chartdata" :options="options" />
         </div>
       </template>
@@ -99,9 +99,10 @@ Vue.component("line-chart-container", {
     await this.loadData();
   },
   watch: {
-    startDate: 'loadData',
-    endDate: 'loadData',
-    selectedOption: 'loadData'
+    // startDate: 'loadData',
+    // endDate: 'loadData',
+    selectedOption: 'loadData',
+    dataUrl: 'loadData',
   },
   methods: {
     hexToRgbA(hex, alpha) {
