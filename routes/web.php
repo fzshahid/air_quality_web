@@ -25,8 +25,9 @@ Route::get('/admin', function () {
 Route::prefix('dashboard')->namespace('App\Http\Controllers\Admin')->name('dashboard/')->group(static function () {
     Route::get('/',                                             [DashboardController::class, 'index'])->name('index');
     Route::get('/line-chart-temperature',                                       [DashboardController::class, 'temperatureLineChart'])->name('temperatureLineChart');
-    Route::get('/line-chart-pm-1-5',                                       [DashboardController::class, 'lineChartPm15'])->name('lineChartPm15');
+    Route::get('/line-chart-pm-1',                                       [DashboardController::class, 'lineChartPM1'])->name('lineChartPM1');
     Route::get('/line-chart-pm-2-5',                                       [DashboardController::class, 'lineChartPm25'])->name('lineChartPm25');
+    Route::get('/line-chart-pm-4',                                       [DashboardController::class, 'lineChartPM4'])->name('lineChartPM4');
     Route::get('/line-chart-pm-10',                                       [DashboardController::class, 'lineChartPm10'])->name('lineChartPm10');
     Route::get('/line-chart-humidity',                                       [DashboardController::class, 'lineChartHumidity'])->name('lineChartHumidity');
     Route::get('/line-chart-tvoc',                                       [DashboardController::class, 'lineChartTvoc'])->name('lineChartTvoc');

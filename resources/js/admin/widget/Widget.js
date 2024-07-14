@@ -1,6 +1,6 @@
 Vue.component('widget', {
     // mixins: [AppListing],
-    props: {  },
+    props: {},
     data: function () {
         return {
             form: {
@@ -17,64 +17,64 @@ Vue.component('widget', {
                     unit: '%',
                 },
                 temperature: {
-                    label:  'Temperature',
+                    label: 'Temperature',
                     url: 'dashboard/line-chart-temperature',
                     xLabel: 'Time',
                     yLabel: 'Celcius',
                     unit: '°C',
                 },
                 pm1_5: {
-                    label:  'PM1.5',
-                    url: 'dashboard/line-chart-pm-1-5',
+                    label: 'PM1',
+                    url: 'dashboard/line-chart-pm-1',
                     xLabel: 'Time',
                     yLabel: 'µg/m³',
                     unit: 'µg/m³',
                 },
                 pm2_5: {
-                    label:  'PM2.5',
+                    label: 'PM2.5',
                     url: 'dashboard/line-chart-pm-2-5',
                     xLabel: 'Time',
                     yLabel: 'µg/m³',
                     unit: 'µg/m³',
                 },
                 pm4: {
-                    label:  'PM4',
+                    label: 'PM4',
                     url: 'dashboard/line-chart-pm-4',
                     xLabel: 'Time',
                     yLabel: 'µg/m³',
                     unit: 'µg/m³',
                 },
                 pm10: {
-                    label:  'PM10',
+                    label: 'PM10',
                     url: 'dashboard/line-chart-pm-10',
                     xLabel: 'Time',
                     yLabel: 'µg/m³',
                     unit: 'µg/m³',
                 },
                 tvoc: {
-                    label:  'TVOC',
+                    label: 'TVOC',
                     url: 'dashboard/line-chart-tvoc',
                     xLabel: 'Time',
                     yLabel: 'ppb',
                     unit: 'ppb',
                 },
                 co2: {
-                    label:  'CO₂',
+                    label: 'CO₂',
                     url: 'dashboard/line-chart-co-2',
                     xLabel: 'Time',
                     yLabel: 'Parts per million',
                     unit: 'ppm',
                 },
                 eco2: {
-                    label:  'eCO₂',
+                    label: 'eCO₂',
                     url: 'dashboard/line-chart-co-2',
                     xLabel: 'Time',
                     yLabel: 'Parts per million',
                     unit: 'ppm',
                 },
                 all: {
-                    label:  'All Metrices',
-                    url: 'dashboard/line-chart-co-2',
+                    label: 'All Metrices',
+                    url: 'dashboard/line-chart-all',
                     xLabel: 'Time',
                     yLabel: '',
                     unit: '',
@@ -85,6 +85,7 @@ Vue.component('widget', {
             aqiData: {},
             selectedItem: {},
             chartKey: +new Date(),
+            selectedOption: '24hrs',
         }
     },
     async mounted() {
@@ -93,6 +94,10 @@ Vue.component('widget', {
         }
 
         await this.loadData();
+        this.switchChart(this.keyLabels.co2);
+
+        // Set interval to load data every 10 seconds
+        setInterval(this.loadData, 10000);
     },
     watch: {
         showModal(newValue) {
@@ -101,7 +106,7 @@ Vue.component('widget', {
             } else {
                 $(this.$refs.subscribeModal).modal('hide');
             }
-        }
+        },
     },
     methods: {
         switchChart(item) {
@@ -111,9 +116,7 @@ Vue.component('widget', {
         loadData: async function () {
             try {
                 const apiUrl = "/api/get-widget-data";
-                const data = await axios.get(
-                    apiUrl
-                );
+                const data = await axios.get(apiUrl);
                 
                 this.aqiData = data.data.data;
                 this.loaded = true;

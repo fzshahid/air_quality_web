@@ -6,10 +6,14 @@ use App\Models\AirQualityReading;
 use App\Models\Ccs811Reading;
 use App\Models\Scd41Reading;
 use App\Models\Sps30Reading;
+use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
+use App\Http\Enums\DataCategoriesEnum;
 
 class AirQualityReadingsService
 {
+    
     public function storeSps30(array $input) {
         $reading = Sps30Reading::create($input);
         return $reading;
@@ -24,34 +28,31 @@ class AirQualityReadingsService
     }
 
     
-    public function store(array $input)
+    public function calculateAqiIndex(\App\Models\AirQualityReading $airQualityReading)
     {
-        $pm25 = $input['pm2_5'];
-        $pm10 = $input['pm10'];
-
         // Truncate the concentrations
-        $pm25_truncated = $this->truncateValue($pm25, 0.1);
-        $pm10_truncated = $this->truncateValue($pm10, 1);
+        $pm25_truncated = $this->truncateValue($airQualityReading->pm2_5, 0.1);
+        $pm10_truncated = $this->truncateValue($airQualityReading->pm10, 1);
 
         // Calculate AQI for PM2.5 and PM10
         $aqi_pm25 = $this->calculateAqi($pm25_truncated, $this->pm25Breakpoints());
         $aqi_pm10 = $this->calculateAqi($pm10_truncated, $this->pm10Breakpoints());
 
-        $response = $this->checkVentilationNeed($input);
+        // $response = $this->checkVentilationNeed($input);
         // Store or process the input as needed
 
         // AirQualityReading::create($input);
 
-        $pmMeasurements = [
-            21, null, 35, 49.2, 48.6, 53.7, 66.2, 69.2, 64.9, 50, 43, 34.9
-        ];
-        $cast_now_aqi_pm25_truncated = $this->truncateValue($this->calculateNowCast($pmMeasurements), 0.1);
-        $cast_now_aqi_pm25 = $this->calculateAqi($cast_now_aqi_pm25_truncated, $this->pm25Breakpoints());
+        // $pmMeasurements = [
+        //     21, null, 35, 49.2, 48.6, 53.7, 66.2, 69.2, 64.9, 50, 43, 34.9
+        // ];
+        // $cast_now_aqi_pm25_truncated = $this->truncateValue($this->calculateNowCast($pmMeasurements), 0.1);
+        // $cast_now_aqi_pm25 = $this->calculateAqi($cast_now_aqi_pm25_truncated, $this->pm25Breakpoints());
         return [
-            'aqi_pm_2_5' => $aqi_pm25,
-            'aqi_pm_10' => $aqi_pm10,
-            'cast_now_12_hour_aqi_pm25' => $cast_now_aqi_pm25,
-            'ventilation' => $response,
+            'aqi_pm2_5' => $aqi_pm25,
+            'aqi_pm10' => $aqi_pm10,
+            // 'cast_now_12_hour_aqi_pm25' => $cast_now_aqi_pm25,
+            // 'ventilation' => $response,
         ];
     }
 
@@ -308,5 +309,154 @@ class AirQualityReadingsService
         }
 
         return $nowCast;
+    }
+
+
+    public function getHourlyRate($hours)
+    {
+        $now = now();
+        $startTime = $now->copy()->subHours($hours);
+
+        $co2Rates = AirQualityReading::select(
+                DB::raw('AVG(temperature) AS avg_temperature'),
+                DB::raw('AVG(humidity) AS avg_humidity'),
+                DB::raw('AVG(co2) AS avg_co2'),
+                DB::raw('AVG(pm1_0) AS avg_pm1'),
+                DB::raw('AVG(pm2_5) AS avg_pm2_5'),
+                DB::raw('AVG(pm4) AS avg_pm4'),
+                DB::raw('AVG(pm10) AS avg_pm10'),
+                DB::raw('AVG(eco2) AS avg_eco2'),
+                DB::raw('AVG(tvoc) AS avg_tvoc'),
+                DB::raw('AVG(co2) as avg_co2'),
+                DB::raw('HOUR(created_at) as hour')
+            )
+            ->whereBetween('created_at', [$startTime, $now])
+            ->groupBy(DB::raw('HOUR(created_at)'))
+            ->get();
+
+        // $resp = [];
+        // foreach ($co2Rates as $key => $value) {
+        //     $co2 = [
+        //         'category_name' => 'CO2',
+        //         'date' => $value->hour,
+        //         'total' => round($value->avg_co2),
+        //     ];
+        //     $eco2 = [
+        //         'category_name' => 'eco2',
+        //         'date' => $value->hour,
+        //         'total' => round($value->avg_eco2),
+        //     ];
+        //     // $humid = [
+        //     //     'category_name' => 'humidity',
+        //     //     'date' => $value->hour,
+        //     //     'total' => round($value->avg_humidity),
+        //     // ];
+        //     array_push($resp, $co2, $eco2,$humid);
+        // }
+
+        return ($co2Rates);
+    }
+
+    public function getDailyRate($days)
+    {
+        $now = Carbon::now();
+        $startTime = $now->copy()->subDays($days);
+
+        $co2Rates = AirQualityReading::select(
+                DB::raw('AVG(temperature) AS avg_temperature'),
+                DB::raw('AVG(humidity) AS avg_humidity'),
+                DB::raw('AVG(co2) AS avg_co2'),
+                DB::raw('AVG(pm1_0) AS avg_pm1'),
+                DB::raw('AVG(pm2_5) AS avg_pm2_5'),
+                DB::raw('AVG(pm4) AS avg_pm4'),
+                DB::raw('AVG(pm10) AS avg_pm10'),
+                DB::raw('AVG(eco2) AS avg_eco2'),
+                DB::raw('AVG(tvoc) AS avg_tvoc'),
+                DB::raw('AVG(co2) as avg_co2'),
+                DB::raw('DATE(created_at) as date')
+            )
+            ->whereBetween('created_at', [$startTime, $now])
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->get();
+
+        return ($co2Rates);
+    }
+
+    /**
+     * Get Chart Data
+     *
+     * @param string $lastFilter
+     * @return \Illuminate\Support\Collection
+     */
+    public function getChartData($lastFilter)
+    {
+        $data = [];
+        switch ($lastFilter) {
+            case 'lastmonth':
+                $data = $this->getDailyRate(30);
+                
+                break;
+            case 'lastweek':
+                $data = $this->getDailyRate(7);
+                
+                break;
+            default:
+                $data = $this->getHourlyRate(24);
+                break;
+
+        }
+        
+        $resp = [];
+        foreach ($data as $key => $value) {
+            // $dateFormatted = optional($value)->hour ?? optional($value)->date;
+            $dateFormatted = optional($value)->hour !== null ? numberToTime($value->hour) : Carbon::parse($value->date)->format('d.m.Y');
+            $temperature = [
+                'category_name' => DataCategoriesEnum::TEMPERATURE,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_temperature, 2),
+            ];
+            $co2 = [
+                'category_name' => DataCategoriesEnum::CO2,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_co2),
+            ];
+            $eco2 = [
+                'category_name' => DataCategoriesEnum::ECO2,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_eco2),
+            ];
+            $humidity = [
+                'category_name' => DataCategoriesEnum::HUMIDITY,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_humidity, 2),
+            ];
+            $tvoc = [
+                'category_name' => DataCategoriesEnum::TVOC,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_tvoc),
+            ];
+            $pm1 = [
+                'category_name' => DataCategoriesEnum::PM1,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_pm1),
+            ];
+            $pm2_5 = [
+                'category_name' => DataCategoriesEnum::PM2_5,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_pm2_5),
+            ];
+            $pm4 = [
+                'category_name' => DataCategoriesEnum::PM4,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_pm4),
+            ];
+            $pm10 = [
+                'category_name' => DataCategoriesEnum::PM10,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_pm10),
+            ];
+            array_push($resp, $temperature, $co2, $eco2, $humidity, $tvoc, $pm1, $pm2_5, $pm4, $pm10);
+        }
+        return collect($resp);
     }
 }

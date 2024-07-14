@@ -152,7 +152,26 @@
                     </div>
                     <div class="col-md-9 col-xs-12 align-self-center">
                         <div class="card">
-                            <line-chart-container :key="chartKey" :data-url="selectedItem.url" :title="selectedItem.label" :x-axis-label="selectedItem.xLabel" :y-axis-label="selectedItem.yLabel" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
+                            <div class="card-body">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="columns">
+                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                            <label class="btn btn-light" :class="{ active: selectedOption === '24hrs' }">
+                                                <input type="radio" name="options" id="24hrs" value="24hrs" v-model="selectedOption"> 24 hrs
+                                            </label>
+                                            <label class="btn btn-light" :class="{ active: selectedOption === 'lastweek' }">
+                                                <input type="radio" name="options" id="lastweek" value="lastweek" v-model="selectedOption"> Last week
+                                            </label>
+                                            <!-- <label class="btn btn-light" :class="{ active: selectedOption === 'lastmonth' }">
+                                                <input type="radio" name="options" id="lastmonth" value="lastmonth" v-model="selectedOption"> Last Month
+                                            </label> -->
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <line-chart-container :key="chartKey" :selected-option="selectedOption" :data-url="selectedItem.url" :title="selectedItem.label" :x-axis-label="selectedItem.xLabel" :y-axis-label="selectedItem.yLabel" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
                         </div>
                     </div>
                 </div>

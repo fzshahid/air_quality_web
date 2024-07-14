@@ -18,7 +18,7 @@ Vue.component('widget', {
         keyLabels: {
             humidity: 'Humidity',
             temperature: 'Temperature',
-            pm1_5: 'PM1.5',
+            pm1_5: 'PM1',
             pm10: 'PM10',
             tvoc: 'TVOC',
             co2: 'CO₂'
@@ -26,7 +26,7 @@ Vue.component('widget', {
         units: {
             humidity: '%',
             temperature: '°C',
-            pm1_5: 'µg/m³',
+            pm1: 'µg/m³',
             pm10: 'µg/m³',
             tvoc: 'ppb',
             co2: 'ppm'

@@ -13,3 +13,9 @@ function notifyUsers() {
     $a = \Brackets\AdminAuth\Models\AdminUser::all();
     \Notification::send($a, new \App\Notifications\UserSubscribed());
 }
+
+function numberToTime($hour) {
+    $carbon = \Carbon\Carbon::today()->startOfDay();
+    $carbon->addHours($hour);    
+    return $carbon->format('H:i');
+}

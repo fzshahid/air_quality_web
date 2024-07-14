@@ -15,6 +15,10 @@ Vue.component("line-chart-container", {
   components: { LineChart },
 
   props: {
+    selectedOption: {
+      required: true,
+      default: '24hrs',
+    },
     dataUrl: {
       type: String,
       required: true,
@@ -52,14 +56,14 @@ Vue.component("line-chart-container", {
           enabled: false
         },
         title: {
-          display: true,
+          display: false,
           text: '',
           font: { 
             size: 18 
           },
           padding: {
-            top: 10,
-            bottom: 30
+            top: 5,
+            bottom: 5
           }
         },
         legend: {
@@ -97,6 +101,7 @@ Vue.component("line-chart-container", {
   watch: {
     startDate: 'loadData',
     endDate: 'loadData',
+    selectedOption: 'loadData'
   },
   methods: {
     hexToRgbA(hex, alpha) {
@@ -129,7 +134,7 @@ Vue.component("line-chart-container", {
     async loadData() {
       try {
         const response = await axios.get(
-          `${this.dataUrl}?start_date=${this.startDate}&end_date=${this.endDate}`
+          `${this.dataUrl}?start_date=${this.startDate}&end_date=${this.endDate}&last=${this.selectedOption}`
         );
 
         const userlist = response.data;
@@ -146,7 +151,8 @@ Vue.component("line-chart-container", {
           data: totalDataPoints,
         };
 
-        let dataSets = [totalDataSet];
+        // let dataSets = [totalDataSet];
+        let dataSets = [];
 
         categories.forEach(category => {
           let categoryData = userlist

@@ -16,6 +16,8 @@ class AirQualityReading extends Model
         'pm10',
         'eco2',
         'tvoc',
+        'aqi_pm2_5',
+        'aqi_pm10',
     
     ];
     
