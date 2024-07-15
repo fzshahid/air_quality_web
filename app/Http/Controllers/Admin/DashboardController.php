@@ -57,6 +57,12 @@ class DashboardController extends Controller
         $resp = $this->airQualityReadingService->getChartData($lastFilter)->whereIn('category_name', [DataCategoriesEnum::HUMIDITY])->values()->all();
         return response()->json($resp);
     }
+    public function lineChartPM(Request $request)
+    {
+        $lastFilter = $request->query('last');
+        $resp = $this->airQualityReadingService->getChartData($lastFilter)->whereIn('category_name', [DataCategoriesEnum::PM1, DataCategoriesEnum::PM2_5, DataCategoriesEnum::PM4, DataCategoriesEnum::PM10])->values()->all();
+        return response()->json($resp);
+    }
     public function lineChartPM1(Request $request)
     {
         $lastFilter = $request->query('last');

@@ -107,6 +107,10 @@ Vue.component("line-chart-container", {
   }),
   async mounted() {
     this.loaded = false;
+    // debugger;
+    this.options.plugins.title.text = this.chartConfigOption.label;
+    this.options.scales.x.title.text = this.chartConfigOption.xLabel;
+    this.options.scales.y.title.text = this.chartConfigOption.yLabel;
     // this.options.plugins.title.text = this.title;
     // this.options.scales.x.title.text = this.xAxisLabel;
     // this.options.scales.y.title.text = this.yAxisLabel;
@@ -115,7 +119,8 @@ Vue.component("line-chart-container", {
   watch: {
     chartConfigOption: {
       async handler(val){
-        // do stuff
+        
+        debugger;
         this.options.plugins.title.text = this.chartConfigOption.label;
         this.options.scales.x.title.text = this.chartConfigOption.xLabel;
         this.options.scales.y.title.text = this.chartConfigOption.yLabel;

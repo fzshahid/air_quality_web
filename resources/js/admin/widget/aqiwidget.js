@@ -57,7 +57,10 @@ Vue.component('AqiWidget', {
             selectedItem: {},
             chartKey: +new Date(),
             // selectedOption: '24hrs',
-            aqiIndex: {},
+            aqiIndex: {
+                aqi_pm10: {},
+                aqi_pm2_5: {},
+            },
             messages: {},
             selectedChartItem: 'pm2_5',
 

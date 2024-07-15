@@ -7,51 +7,103 @@
 <dashboard v-cloak inline-template :action="''">
     <div>
         <div class="row">
-            <div class="col-sm-6">
-                <div class="form-group row align-items-center"
-                    :class="{'has-danger': errors.has('start_date'), 'has-success': fields.start_date && fields.start_date.valid }">
-                    <label for="start_date" class="col-form-label text-md-right"
-                        :class="isFormLocalized ? 'col-md-4' : 'col-md-3'">Date</label>
-                    <div :class="isFormLocalized ? 'col-md-4' : 'col-sm-8'">
-                        <div class="input-group input-group--custom">
-                            <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
-                            <datetime v-model="form.startDate" :config="datePickerConfig" @change="reloadStats"
-                                v-validate="'required_if:form.sponsored,true,1|date_format:yyyy-MM-dd'" class="flatpickr"
-                                :class="{'form-control-danger': errors.has('start_date'), 'form-control-success': fields.start_date && fields.start_date.valid}"
-                                id="start_date" name="start_date"
-                                placeholder="{{ trans('brackets/admin-ui::admin.forms.select_a_date') }}"
-                                data-vv-as="Start date"></datetime>
+            <div class="col-6">
+                <div class="card">
+                    <div class="col-lg mt-4 px-4 text-right">
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-light" :class="{ active: keyLabels.humidity.selectedOption === '24hrs' }">
+                                <input type="radio" value="24hrs" v-model="keyLabels.humidity.selectedOption"> 24 hrs
+                            </label>
+                            <label class="btn btn-light" :class="{ active: keyLabels.humidity.selectedOption === 'lastweek' }">
+                                <input type="radio" value="lastweek" v-model="keyLabels.humidity.selectedOption"> Last week
+                            </label>
                         </div>
-                        <div v-if="errors.has('start_date')" class="form-control-feedback form-text" v-cloak>
-                            @{{ errors.first('start_date') }}</div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="">
+                            <line-chart-container :chart-config-option="keyLabels.humidity" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card">
+                    <div class="col-lg mt-4 px-4 text-right">
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-light" :class="{ active: keyLabels.temperature.selectedOption === '24hrs' }">
+                                <input type="radio" value="24hrs" v-model="keyLabels.temperature.selectedOption"> 24 hrs
+                            </label>
+                            <label class="btn btn-light" :class="{ active: keyLabels.temperature.selectedOption === 'lastweek' }">
+                                <input type="radio" value="lastweek" v-model="keyLabels.temperature.selectedOption"> Last week
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="">
+                            <line-chart-container :chart-config-option="keyLabels.temperature" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-6">
                 <div class="card">
-                    <!-- <line-chart-container :data-url="'{{ url('dashboard/line-chart-pm') }}'" :title="'PM2.5 and AQI'" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container> -->
+                    <div class="col-lg mt-4 px-4 text-right">
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-light" :class="{ active: keyLabels.pm.selectedOption === '24hrs' }">
+                                <input type="radio" value="24hrs" v-model="keyLabels.pm.selectedOption"> 24 hrs
+                            </label>
+                            <label class="btn btn-light" :class="{ active: keyLabels.pm.selectedOption === 'lastweek' }">
+                                <input type="radio" value="lastweek" v-model="keyLabels.pm.selectedOption"> Last week
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="">
+                            <line-chart-container :chart-config-option="keyLabels.pm" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-sm-12">
+            <div class="col-6">
                 <div class="card">
-                    <line-chart-container :data-url="'{{ url('dashboard/temperature-line-chart') }}'" :title="'Temperature'" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
+                    <div class="col-lg mt-4 px-4 text-right">
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-light" :class="{ active: keyLabels.tvoc.selectedOption === '24hrs' }">
+                                <input type="radio" value="24hrs" v-model="keyLabels.tvoc.selectedOption"> 24 hrs
+                            </label>
+                            <label class="btn btn-light" :class="{ active: keyLabels.tvoc.selectedOption === 'lastweek' }">
+                                <input type="radio" value="lastweek" v-model="keyLabels.tvoc.selectedOption"> Last week
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="">
+                            <line-chart-container :chart-config-option="keyLabels.tvoc" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-sm-12">
+        </div>
+        <div class="row">
+            <div class="col-6">
                 <div class="card">
-                    <line-chart-container :data-url="'{{ url('dashboard/line-chart-co-2') }}'" :title="'Co2 Level'" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="card">
-                    <new-users-chart :data-url="'{{ url('dashboard/temperature-line-chart') }}'" :start-date="form.startDate" :end-date="form.endDate"></new-users-chart>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="card">
-                    <!-- <bar-chart-container :data-url="'{{ url('dashboard/active-users') }}'" :start-date="form.startDate" :end-date="form.endDate"></bar-chart-container> -->
+                    <div class="col-lg mt-4 px-4 text-right">
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-light" :class="{ active: keyLabels.co2.selectedOption === '24hrs' }">
+                                <input type="radio" value="24hrs" v-model="keyLabels.co2.selectedOption"> 24 hrs
+                            </label>
+                            <label class="btn btn-light" :class="{ active: keyLabels.co2.selectedOption === 'lastweek' }">
+                                <input type="radio" value="lastweek" v-model="keyLabels.co2.selectedOption"> Last week
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="">
+                            <line-chart-container :chart-config-option="keyLabels.co2" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
