@@ -85,6 +85,23 @@ Vue.component('aqi-widget', {
             aqiData: {},
             selectedItem: {},
             chartKey: +new Date(),
+            // selectedOption: '24hrs',
+            aqiIndex: {},
+            messages: {},
+            selectedChartItem: 'pm2_5',
+
+            currentTime: '',
+            dayName: '',
+            lastweek: null,
+            lastUpdatedAt: null,
+            chartConfigOption: {
+                dataUrl: '',
+                selectedOption: '24hrs',
+                selectedChartItem: 'pm2_5',
+                xLabel: '',
+                yLabel: '',
+                title: '',
+            }
         }
     },
     props: {
@@ -124,6 +141,11 @@ Vue.component('aqi-widget', {
     },
     methods: {
         switchChart(item) {
+            this.chartConfigOption.dataUrl = item.url;
+            this.chartConfigOption.xLabel = item.xLabel;
+            this.chartConfigOption.yLabel = item.yLabel;
+            this.chartConfigOption.label = item.label;
+            this.chartConfigOption.unit = item.unit;
             this.selectedItem = item;
             this.chartKey++;
         },

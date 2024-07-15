@@ -15,18 +15,22 @@ Vue.component("line-chart-container", {
   components: { LineChart },
 
   props: {
-    selectedOption: {
+    chartConfigOption: {
       required: true,
-      default: '24hrs',
+      type: Object,
     },
-    dataUrl: {
-      type: String,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
+    // selectedOption: {
+    //   required: true,
+    //   default: '24hrs',
+    // },
+    // dataUrl: {
+    //   type: String,
+    //   required: true,
+    // },
+    // title: {
+    //   type: String,
+    //   required: true,
+    // },
     startDate: {
       type: String,
       required: true,
@@ -35,18 +39,29 @@ Vue.component("line-chart-container", {
       type: String,
       required: true,
     },
-    xAxisLabel: {
-      type: String,
-      required: true,
-    },
-    yAxisLabel: {
-      type: String,
-      required: true,
-    },
+    // xAxisLabel: {
+    //   type: String,
+    //   required: true,
+    // },
+    // yAxisLabel: {
+    //   type: String,
+    //   required: true,
+    // },
   },
   data: () => ({
     loaded: false,
     chartdata: null,
+    categoriesMap: {
+      temperature: 'Temperature',
+      co2: 'CO₂',
+      eco2: 'eCO₂',
+      humidity: 'Humidity',
+      tvoc: 'Tvoc',
+      pm1: 'PM1',
+      pm2_5: 'PM2.5',
+      pm4: 'PM4',
+      pm10: 'PM10',
+    },
     options: {
       plugins: {
         customCanvasBackgroundColor: {
@@ -56,7 +71,7 @@ Vue.component("line-chart-container", {
           enabled: false
         },
         title: {
-          display: false,
+          display: true,
           text: '',
           font: { 
             size: 18 
@@ -72,13 +87,12 @@ Vue.component("line-chart-container", {
       },
       scales: {
         y: {
+          beginAtZero: true,
           title: {
-            text: '',
+            text: 'k',
             display: true,
           },
-          ticks: {
-            beginAtZero: true,
-          },
+          
         },
         x: {
           title: {
@@ -93,16 +107,40 @@ Vue.component("line-chart-container", {
   }),
   async mounted() {
     this.loaded = false;
-    this.options.plugins.title.text = this.title;
-    this.options.scales.x.title.text = this.xAxisLabel;
-    this.options.scales.y.title.text = this.yAxisLabel;
+    // this.options.plugins.title.text = this.title;
+    // this.options.scales.x.title.text = this.xAxisLabel;
+    // this.options.scales.y.title.text = this.yAxisLabel;
     await this.loadData();
   },
   watch: {
+    chartConfigOption: {
+      async handler(val){
+        // do stuff
+        this.options.plugins.title.text = this.chartConfigOption.label;
+        this.options.scales.x.title.text = this.chartConfigOption.xLabel;
+        this.options.scales.y.title.text = this.chartConfigOption.yLabel;
+        await this.loadData();
+      },
+      deep: true
+   }
     // startDate: 'loadData',
     // endDate: 'loadData',
-    selectedOption: 'loadData',
-    dataUrl: 'loadData',
+    // chartConfigOption: 'loadData',
+    // dataUrl: 'loadData',
+    // 'chartConfigOption': function () {
+    //   // deep: true,
+    //   // handle: () => {
+    //     this.options.plugins.title.text = this.chartConfigOption.label;
+    //     this.options.scales.x.title.text = this.chartConfigOption.xLabel;
+    //     this.options.scales.y.title.text = this.chartConfigOption.yLabel;
+    //     // await this.loadData();
+    //   // }
+    // }
+  },
+  computed: {
+    // options() {
+      
+    // }
   },
   methods: {
     hexToRgbA(hex, alpha) {
@@ -135,7 +173,7 @@ Vue.component("line-chart-container", {
     async loadData() {
       try {
         const response = await axios.get(
-          `${this.dataUrl}?start_date=${this.startDate}&end_date=${this.endDate}&last=${this.selectedOption}`
+          `${this.chartConfigOption.dataUrl}?start_date=${this.startDate}&end_date=${this.endDate}&last=${this.chartConfigOption.selectedOption}`
         );
 
         const userlist = response.data;
@@ -146,11 +184,11 @@ Vue.component("line-chart-container", {
           return _.sumBy(userlist, elem => elem.date === label ? elem.total : 0);
         });
 
-        let totalDataSet = {
-          label: 'AQI',
-          borderWidth: 1,
-          data: totalDataPoints,
-        };
+        // let totalDataSet = {
+        //   label: 'AQI',
+        //   borderWidth: 1,
+        //   data: totalDataPoints,
+        // };
 
         // let dataSets = [totalDataSet];
         let dataSets = [];
@@ -161,10 +199,10 @@ Vue.component("line-chart-container", {
             .map(item => item.total);
 
           dataSets.push({
-            label: category.category_name,
+            label: this.categoriesMap.hasOwnProperty(category.category_name) ? this.categoriesMap[category.category_name] : category.category_name,
             data: categoryData,
             fill: true,
-            tension: 0.1,
+            tension: 0.15,
             borderColor: this.stringToColour(category.category_name, 0.8),
           });
         });
