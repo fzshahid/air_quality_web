@@ -51,6 +51,7 @@ class AirQualityReadingsService
                 return [
                     'aqi' => round($aqi),
                     'tag' => $bp['tag'],
+                    'class' => $bp['class'],
                     'intensity' => $bp['intensity'],
                     'message' => $bp['message'],
                 ];
@@ -76,6 +77,7 @@ class AirQualityReadingsService
                 "i_low" => 0,
                 "i_high" => 50,
                 'tag' => 'Good',
+                'class' => 'aqi-good',
                 'intensity' => 0,
                 'message' => 'Air Quality is Good!'
             ],
@@ -85,6 +87,7 @@ class AirQualityReadingsService
                 "i_low" => 51,
                 "i_high" => 100,
                 'tag' => 'Moderate',
+                'class' => 'aqi-moderate',
                 'intensity' => 1,
                 'message' => 'Unusually sensitive people should consider reducing prolonged or heavy exertion.'
             ],
@@ -94,6 +97,7 @@ class AirQualityReadingsService
                 "i_low" => 101,
                 "i_high" => 150,
                 'tag' => 'Unhealthy for Sensitive Groups',
+                'class' => 'aqi-unhealthy-for-sensitive-groups',
                 'intensity' => 2,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should reduce prolonged or heavy exertion.'
             ],
@@ -103,6 +107,7 @@ class AirQualityReadingsService
                 "i_low" => 151,
                 "i_high" => 200,
                 'tag' => 'Unhealthy',
+                'class' => 'aqi-unhealthy',
                 'intensity' => 3,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should avoid prolonged or heavy exertion; everyone else should reduce prolonged or heavy exertion.'
             ],
@@ -112,6 +117,7 @@ class AirQualityReadingsService
                 "i_low" => 201,
                 "i_high" => 300,
                 'tag' => 'Very Unhealthy',
+                'class' => 'aqi-very-unhealthy',
                 'intensity' => 4,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should avoid all physical activity outdoors. Everyone else should avoid prolonged or heavy exertion.'
             ],
@@ -121,6 +127,7 @@ class AirQualityReadingsService
                 "i_low" => 301,
                 "i_high" => 500,
                 'tag' => 'Hazardous',
+                'class' => 'aqi-hazardous',
                 'intensity' => 5,
                 'message' => 'Everyone should avoid all physical activity outdoors; people with heart or lung disease, older adults, children, and people of lower socioeconomic status should remain indoors and keep activity levels low.'
             ],
@@ -140,7 +147,7 @@ class AirQualityReadingsService
                 "i_low" => 0,
                 "i_high" => 50,
                 'tag' => 'Good',
-                 0,
+                'class' => 'aqi-good',
                 'message' => 'Air Quality is Good!'
             ],
             [
@@ -149,6 +156,7 @@ class AirQualityReadingsService
                 "i_low" => 51,
                 "i_high" => 100,
                 'tag' => 'Moderate',
+                'class' => 'aqi-moderate',
                 'intensity' => 1,
                 'message' => 'Unusually sensitive people should consider reducing prolonged or heavy exertion.'
             ],
@@ -158,6 +166,7 @@ class AirQualityReadingsService
                 "i_low" => 101,
                 "i_high" => 150,
                 'tag' => 'Unhealthy for Sensitive Groups',
+                'class' => 'aqi-unhealthy-for-sensitive-groups',
                 'intensity' => 2,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should reduce prolonged or heavy exertion.'
             ],
@@ -167,6 +176,7 @@ class AirQualityReadingsService
                 "i_low" => 151,
                 "i_high" => 200,
                 'tag' => 'Unhealthy',
+                'class' => 'aqi-unhealthy',
                 'intensity' => 3,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should avoid prolonged or heavy exertion; everyone else should reduce prolonged or heavy exertion.'
             ],
@@ -176,6 +186,7 @@ class AirQualityReadingsService
                 "i_low" => 201,
                 "i_high" => 300,
                 'tag' => 'Very Unhealthy',
+                'class' => 'aqi-very-unhealthy',
                 'intensity' => 4,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should avoid all physical activity outdoors. Everyone else should avoid prolonged or heavy exertion.'
             ],
@@ -185,6 +196,7 @@ class AirQualityReadingsService
                 "i_low" => 301,
                 "i_high" => 500,
                 'tag' => 'Hazardous',
+                'class' => 'aqi-hazardous',
                 'intensity' => 5,
                 'message' => 'Everyone should avoid all physical activity outdoors; people with heart or lung disease, older adults, children, and people of lower socioeconomic status should remain indoors and keep activity levels low.'
             ],
@@ -405,7 +417,7 @@ class AirQualityReadingsService
         $resp = [];
         foreach ($data as $key => $value) {
             // $dateFormatted = optional($value)->hour ?? optional($value)->date;
-            $dateFormatted = optional($value)->hour !== null ? numberToTime($value->hour) : Carbon::parse($value->date)->format('d.m.Y');
+            $dateFormatted = optional($value)->hour !== null ? numberToTime($value->hour) : Carbon::parse($value->date)->format('d/m/Y');
             $temperature = [
                 'category_name' => DataCategoriesEnum::TEMPERATURE,
                 'date' => $dateFormatted,

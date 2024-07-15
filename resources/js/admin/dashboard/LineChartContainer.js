@@ -7,7 +7,7 @@ Vue.component("line-chart-container", {
   template: `
     <div>
       <template>
-        <div class="">
+        <div class="container">
           <line-chart v-if="loaded && chartdata" :data="chartdata" :chartdata="chartdata" :options="options" />
         </div>
       </template>

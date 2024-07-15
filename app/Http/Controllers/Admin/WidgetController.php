@@ -46,12 +46,12 @@ class WidgetController extends Controller
         $airQualityReading = AirQualityReading::query()->latest()->first();
 
         $data = [
-            'humidity' => $airQualityReading->humidity,
-            'temperature' => $airQualityReading->temperature,
+            'humidity' => round($airQualityReading->humidity, 1),
+            'temperature' => round($airQualityReading->temperature, 1),
             // 'pm1_5' => $airQualityReading->pm1_0,
-            'pm2_5' => $airQualityReading->pm2_5,
+            'pm2_5' => round($airQualityReading->pm2_5, 1),
             // 'pm4' => $airQualityReading->pm4,
-            'pm10' => $airQualityReading->pm10,
+            'pm10' => round($airQualityReading->pm10, 1),
             'tvoc' => $airQualityReading->tvoc,
             'co2' => $airQualityReading->co2,
             // 'eco2' => $airQualityReading->eco2,
@@ -62,7 +62,7 @@ class WidgetController extends Controller
 
         $messages = $this->airQualityReadingsService->checkVentilationNeed($airQualityReading);
         $aqiIndex = $this->airQualityReadingsService->calculateAqiIndex($airQualityReading);
-        return response()->json(['data' => $data, 'messages' => $messages, 'aqi_index' => $aqiIndex]);
+        return response()->json(['data' => $data, 'messages' => $messages, 'aqi_index' => $aqiIndex, 'updated_at' => $airQualityReading->created_at]);
     }
 
     public function subscribe(Request $request)
