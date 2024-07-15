@@ -24,9 +24,6 @@ Route::group([
         return $request->user();
     });
     Route::post('/air-quality-readings', [AirQualityReadingsAPIController::class, 'store'])->name('airQualityReadings.store');
-    Route::post('/store-ccs811-readings', [AirQualityReadingsAPIController::class, 'storeCcs811'])->name('airQualityReadings.storeCcs811');
-    Route::post('/store-scd41-readings', [AirQualityReadingsAPIController::class, 'storeScd41'])->name('airQualityReadings.storeScd41');
-    Route::post('/store-sps30-readings', [AirQualityReadingsAPIController::class, 'storeSps30'])->name('airQualityReadings.storeSps30');
 });
 Route::group([
 ], function () {

@@ -87,12 +87,31 @@ Vue.component('widget', {
             chartKey: +new Date(),
         }
     },
-    async mounted() {
-        if (this.apiData) {
-            this.aqiData = this.apiData;
-        }
-
-        await this.loadData();
+    props: {
+        // statuses: {
+        //     type: Array,
+        //     required: true,
+        // },
+    },
+    data: {
+        keyLabels: {
+            humidity: 'Humidity',
+            temperature: 'Temperature',
+            pm1_5: 'PM1',
+            pm10: 'PM10',
+            tvoc: 'TVOC',
+            co2: 'CO₂'
+        },
+        units: {
+            humidity: '%',
+            temperature: '°C',
+            pm1: 'µg/m³',
+            pm10: 'µg/m³',
+            tvoc: 'ppb',
+            co2: 'ppm'
+        },
+        showModal: false,
+        email: ''
     },
     watch: {
         showModal(newValue) {

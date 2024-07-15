@@ -40,67 +40,17 @@ class AirQualityReadingsAPIController extends Controller
         $sanitized['pm2_5'] = round($sanitized['pm2_5'] / 1000, 2);
         $sanitized['pm4'] = round($sanitized['pm4'] / 1000, 2);
         $sanitized['pm10'] = round($sanitized['pm10'] / 1000, 2);
+
         $airQualityReading = \App\Models\AirQualityReading::create($sanitized);
+        
+        $aqiData = $this->airQualityReadingsService->calculateAqiIndex($airQualityReading);
+        
+        $airQualityReading->aqi_pm2_5 = $aqiData['aqi_pm2_5']['aqi'];
+        $airQualityReading->aqi_pm10 = $aqiData['aqi_pm10']['aqi'];
+        $airQualityReading->save();
 
         return response()->json([
             'message' => 'Aqi reading stored successfully!',
-            'reading' => $airQualityReading
-        ]);
-    }
-
-    /**
-     * Store SPS30 Reading resource in storage.
-     *
-     * @param StoreSps30APIReading $request
-     * @return array|RedirectResponse|Redirector
-     */
-    public function storeSps30(StoreSps30APIReading $request)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
-        // Store the AirQualityReading
-        $airQualityReading = $this->airQualityReadingsService->storeSps30($sanitized);
-
-        return response()->json([
-            'message' => 'SPS30 reading stored successfully!',
-            'reading' => $airQualityReading
-        ]);
-    }
-    /**
-     * Store a Scd41 resource in storage.
-     *
-     * @param StoreScd41APIReading $request
-     * @return array|RedirectResponse|Redirector
-     */
-    public function storeScd41(StoreScd41APIReading $request)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
-
-        // Store the AirQualityReading
-        $airQualityReading = $this->airQualityReadingsService->storeScd41($sanitized);
-
-        return response()->json([
-            'message' => 'SCD41 reading stored successfully!',
-            'reading' => $airQualityReading
-        ]);
-    }
-    /**
-     * Store a newly scs811 resource in storage.
-     *
-     * @param StoreCcs811APIReading $request
-     * @return array|RedirectResponse|Redirector
-     */
-    public function storeCcs811(StoreCcs811APIReading $request)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
-
-        // Store the AirQualityReading
-        $airQualityReading = $this->airQualityReadingsService->storeCcs811($sanitized);
-
-        return response()->json([
-            'message' => 'CCS811 reading stored successfully!',
             'reading' => $airQualityReading
         ]);
     }

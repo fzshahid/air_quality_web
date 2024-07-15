@@ -1,6 +1,5 @@
 Vue.component('widget', {
-    // mixins: [AppListing],
-    props: {  },
+    props: {},
     data: function () {
         return {
             form: {
@@ -17,67 +16,39 @@ Vue.component('widget', {
                     unit: '%',
                 },
                 temperature: {
-                    label:  'Temperature',
+                    label: 'Temperature',
                     url: 'dashboard/line-chart-temperature',
                     xLabel: 'Time',
                     yLabel: 'Celcius',
                     unit: '°C',
                 },
-                pm1_5: {
-                    label:  'PM1.5',
-                    url: 'dashboard/line-chart-pm-1-5',
-                    xLabel: 'Time',
-                    yLabel: 'µg/m³',
-                    unit: 'µg/m³',
-                },
                 pm2_5: {
-                    label:  'PM2.5',
+                    label: 'PM2.5',
                     url: 'dashboard/line-chart-pm-2-5',
                     xLabel: 'Time',
                     yLabel: 'µg/m³',
                     unit: 'µg/m³',
                 },
-                pm4: {
-                    label:  'PM4',
-                    url: 'dashboard/line-chart-pm-4',
-                    xLabel: 'Time',
-                    yLabel: 'µg/m³',
-                    unit: 'µg/m³',
-                },
                 pm10: {
-                    label:  'PM10',
+                    label: 'PM10',
                     url: 'dashboard/line-chart-pm-10',
                     xLabel: 'Time',
                     yLabel: 'µg/m³',
                     unit: 'µg/m³',
                 },
                 tvoc: {
-                    label:  'TVOC',
+                    label: 'TVOC',
                     url: 'dashboard/line-chart-tvoc',
                     xLabel: 'Time',
                     yLabel: 'ppb',
                     unit: 'ppb',
                 },
                 co2: {
-                    label:  'CO₂',
+                    label: 'CO₂',
                     url: 'dashboard/line-chart-co-2',
                     xLabel: 'Time',
                     yLabel: 'Parts per million',
                     unit: 'ppm',
-                },
-                eco2: {
-                    label:  'eCO₂',
-                    url: 'dashboard/line-chart-co-2',
-                    xLabel: 'Time',
-                    yLabel: 'Parts per million',
-                    unit: 'ppm',
-                },
-                all: {
-                    label:  'All Metrices',
-                    url: 'dashboard/line-chart-co-2',
-                    xLabel: 'Time',
-                    yLabel: '',
-                    unit: '',
                 },
             },
             showModal: false,
@@ -85,6 +56,15 @@ Vue.component('widget', {
             aqiData: {},
             selectedItem: {},
             chartKey: +new Date(),
+            selectedOption: '24hrs',
+            aqiIndex: {},
+            messages: {},
+            selectedChartItem: 'pm2_5',
+
+            currentTime: '',
+            dayName: '',
+            lastweek: null,
+            lastUpdatedAt: null,
         }
     },
     async mounted() {
@@ -93,29 +73,45 @@ Vue.component('widget', {
         }
 
         await this.loadData();
+        this.switchChart(this.keyLabels.co2);
+
+        setInterval(this.loadData, 10000);
+
+        this.updateTime();
+        setInterval(this.updateTime, 1000);
     },
     watch: {
+
         showModal(newValue) {
             if (newValue) {
                 $(this.$refs.subscribeModal).modal('show');
             } else {
                 $(this.$refs.subscribeModal).modal('hide');
             }
-        }
+        },
     },
     methods: {
+        formatTimeAgo(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
+        },
+        updateTime() {
+            const now = new Date();
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+            this.currentTime = now.toLocaleDateString('en-GB', options).replace(/,/g, '');
+            this.dayName = now.toLocaleDateString('en-US', { weekday: 'long' });
+        },
         switchChart(item) {
             this.selectedItem = item;
-            this.chartKey++;
         },
         loadData: async function () {
             try {
                 const apiUrl = "/api/get-widget-data";
-                const data = await axios.get(
-                    apiUrl
-                );
-                
+                const data = await axios.get(apiUrl);
                 this.aqiData = data.data.data;
+                this.messages = data.data.messages.messages;
+                this.aqiIndex = data.data.aqi_index;
+                this.lastUpdatedAt = data.data.updated_at;
                 this.loaded = true;
             } catch (e) {
                 console.error(e);

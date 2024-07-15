@@ -3,55 +3,39 @@
 namespace App\Http\Services;
 
 use App\Models\AirQualityReading;
-use App\Models\Ccs811Reading;
-use App\Models\Scd41Reading;
-use App\Models\Sps30Reading;
-use Illuminate\Support\Arr;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use App\Http\Enums\DataCategoriesEnum;
 
 class AirQualityReadingsService
 {
-    public function storeSps30(array $input) {
-        $reading = Sps30Reading::create($input);
-        return $reading;
-    }
-    public function storeScd41(array $input) {
-        $reading = Scd41Reading::create($input);
-        return $reading;
-    }
-    public function storeCcs811(array $input) {
-        $reading = Ccs811Reading::create($input);
-        return $reading;
-    }
 
     
-    public function store(array $input)
+    public function calculateAqiIndex(\App\Models\AirQualityReading $airQualityReading)
     {
-        $pm25 = $input['pm2_5'];
-        $pm10 = $input['pm10'];
-
         // Truncate the concentrations
-        $pm25_truncated = $this->truncateValue($pm25, 0.1);
-        $pm10_truncated = $this->truncateValue($pm10, 1);
+        $pm25_truncated = $this->truncateValue($airQualityReading->pm2_5, 0.1);
+        $pm10_truncated = $this->truncateValue($airQualityReading->pm10, 1);
 
         // Calculate AQI for PM2.5 and PM10
         $aqi_pm25 = $this->calculateAqi($pm25_truncated, $this->pm25Breakpoints());
         $aqi_pm10 = $this->calculateAqi($pm10_truncated, $this->pm10Breakpoints());
 
-        $response = $this->checkVentilationNeed($input);
+        // $response = $this->checkVentilationNeed($input);
         // Store or process the input as needed
 
         // AirQualityReading::create($input);
 
-        $pmMeasurements = [
-            21, null, 35, 49.2, 48.6, 53.7, 66.2, 69.2, 64.9, 50, 43, 34.9
-        ];
-        $cast_now_aqi_pm25_truncated = $this->truncateValue($this->calculateNowCast($pmMeasurements), 0.1);
-        $cast_now_aqi_pm25 = $this->calculateAqi($cast_now_aqi_pm25_truncated, $this->pm25Breakpoints());
+        // $pmMeasurements = [
+        //     21, null, 35, 49.2, 48.6, 53.7, 66.2, 69.2, 64.9, 50, 43, 34.9
+        // ];
+        // $cast_now_aqi_pm25_truncated = $this->truncateValue($this->calculateNowCast($pmMeasurements), 0.1);
+        // $cast_now_aqi_pm25 = $this->calculateAqi($cast_now_aqi_pm25_truncated, $this->pm25Breakpoints());
         return [
-            'aqi_pm_2_5' => $aqi_pm25,
-            'aqi_pm_10' => $aqi_pm10,
-            'cast_now_12_hour_aqi_pm25' => $cast_now_aqi_pm25,
-            'ventilation' => $response,
+            'aqi_pm2_5' => $aqi_pm25,
+            'aqi_pm10' => $aqi_pm10,
+            // 'cast_now_12_hour_aqi_pm25' => $cast_now_aqi_pm25,
+            // 'ventilation' => $response,
         ];
     }
 
@@ -67,6 +51,8 @@ class AirQualityReadingsService
                 return [
                     'aqi' => round($aqi),
                     'tag' => $bp['tag'],
+                    'class' => $bp['class'],
+                    'intensity' => $bp['intensity'],
                     'message' => $bp['message'],
                 ];
             }
@@ -91,6 +77,8 @@ class AirQualityReadingsService
                 "i_low" => 0,
                 "i_high" => 50,
                 'tag' => 'Good',
+                'class' => 'aqi-good',
+                'intensity' => 0,
                 'message' => 'Air Quality is Good!'
             ],
             [
@@ -99,6 +87,8 @@ class AirQualityReadingsService
                 "i_low" => 51,
                 "i_high" => 100,
                 'tag' => 'Moderate',
+                'class' => 'aqi-moderate',
+                'intensity' => 1,
                 'message' => 'Unusually sensitive people should consider reducing prolonged or heavy exertion.'
             ],
             [
@@ -107,6 +97,8 @@ class AirQualityReadingsService
                 "i_low" => 101,
                 "i_high" => 150,
                 'tag' => 'Unhealthy for Sensitive Groups',
+                'class' => 'aqi-unhealthy-for-sensitive-groups',
+                'intensity' => 2,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should reduce prolonged or heavy exertion.'
             ],
             [
@@ -115,6 +107,8 @@ class AirQualityReadingsService
                 "i_low" => 151,
                 "i_high" => 200,
                 'tag' => 'Unhealthy',
+                'class' => 'aqi-unhealthy',
+                'intensity' => 3,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should avoid prolonged or heavy exertion; everyone else should reduce prolonged or heavy exertion.'
             ],
             [
@@ -123,6 +117,8 @@ class AirQualityReadingsService
                 "i_low" => 201,
                 "i_high" => 300,
                 'tag' => 'Very Unhealthy',
+                'class' => 'aqi-very-unhealthy',
+                'intensity' => 4,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should avoid all physical activity outdoors. Everyone else should avoid prolonged or heavy exertion.'
             ],
             [
@@ -131,6 +127,8 @@ class AirQualityReadingsService
                 "i_low" => 301,
                 "i_high" => 500,
                 'tag' => 'Hazardous',
+                'class' => 'aqi-hazardous',
+                'intensity' => 5,
                 'message' => 'Everyone should avoid all physical activity outdoors; people with heart or lung disease, older adults, children, and people of lower socioeconomic status should remain indoors and keep activity levels low.'
             ],
             // Add additional breakpoints as needed
@@ -149,6 +147,7 @@ class AirQualityReadingsService
                 "i_low" => 0,
                 "i_high" => 50,
                 'tag' => 'Good',
+                'class' => 'aqi-good',
                 'message' => 'Air Quality is Good!'
             ],
             [
@@ -157,6 +156,8 @@ class AirQualityReadingsService
                 "i_low" => 51,
                 "i_high" => 100,
                 'tag' => 'Moderate',
+                'class' => 'aqi-moderate',
+                'intensity' => 1,
                 'message' => 'Unusually sensitive people should consider reducing prolonged or heavy exertion.'
             ],
             [
@@ -165,6 +166,8 @@ class AirQualityReadingsService
                 "i_low" => 101,
                 "i_high" => 150,
                 'tag' => 'Unhealthy for Sensitive Groups',
+                'class' => 'aqi-unhealthy-for-sensitive-groups',
+                'intensity' => 2,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should reduce prolonged or heavy exertion.'
             ],
             [
@@ -173,6 +176,8 @@ class AirQualityReadingsService
                 "i_low" => 151,
                 "i_high" => 200,
                 'tag' => 'Unhealthy',
+                'class' => 'aqi-unhealthy',
+                'intensity' => 3,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should avoid prolonged or heavy exertion; everyone else should reduce prolonged or heavy exertion.'
             ],
             [
@@ -181,6 +186,8 @@ class AirQualityReadingsService
                 "i_low" => 201,
                 "i_high" => 300,
                 'tag' => 'Very Unhealthy',
+                'class' => 'aqi-very-unhealthy',
+                'intensity' => 4,
                 'message' => 'People with heart or lung disease, older adults, children, and people of lower socioeconomic status should avoid all physical activity outdoors. Everyone else should avoid prolonged or heavy exertion.'
             ],
             [
@@ -189,20 +196,22 @@ class AirQualityReadingsService
                 "i_low" => 301,
                 "i_high" => 500,
                 'tag' => 'Hazardous',
+                'class' => 'aqi-hazardous',
+                'intensity' => 5,
                 'message' => 'Everyone should avoid all physical activity outdoors; people with heart or lung disease, older adults, children, and people of lower socioeconomic status should remain indoors and keep activity levels low.'
             ],
             // Add additional breakpoints as needed
         ];
     }
 
-    public function checkVentilationNeed(array $input)
+    public function checkVentilationNeed(\App\Models\AirQualityReading $airQualityReading)
     {
-        $co2 = $input['co2'];
-        $tvoc = $input['tvoc'];
-        $humidity = $input['humidity'];
-        $temperature = $input['temperature'];
-        $pm25 = $input['pm2_5'];
-        $pm10 = $input['pm10'];
+        $co2 = $airQualityReading->co2;
+        $tvoc = $airQualityReading->tvoc;
+        $humidity = $airQualityReading->humidity;
+        $temperature = $airQualityReading->temperature;
+        $pm25 = $airQualityReading->pm2_5;
+        $pm10 = $airQualityReading->pm10;
 
         $ventilationNeeded = false;
         $messages = [];
@@ -216,12 +225,12 @@ class AirQualityReadingsService
          */
         if ($co2 > 800) {
             $ventilationNeeded = true;
-            $messages[] = "High CO2 levels detected: {$co2} ppm. Ventilation needed.";
+            $messages[DataCategoriesEnum::CO2] = "High CO2 levels detected: {$co2} ppm. Ventilation needed.";
         }
 
         if ($tvoc > 1000) {
             $ventilationNeeded = true;
-            $messages[] = "High tvoc levels detected: {$tvoc} ppb. Ventilation needed.";
+            $messages[DataCategoriesEnum::TVOC] = "High tvoc levels detected: {$tvoc} ppb. Ventilation needed.";
         }
 
         /**
@@ -229,7 +238,7 @@ class AirQualityReadingsService
          */
         if ($humidity < 30 || $humidity > 50) {
             $ventilationNeeded = true;
-            $messages[] = "Uncomfortable humidity levels: {$humidity}%. Ventilation needed.";
+            $messages[DataCategoriesEnum::HUMIDITY] = "Uncomfortable humidity levels: {$humidity}%. Ventilation needed.";
         }
 
         /**
@@ -237,7 +246,7 @@ class AirQualityReadingsService
          */
         if ($pm25 > 35.4) {
             $ventilationNeeded = true;
-            $messages[] = "High PM2.5 levels detected: {$pm25} µg/m³. Ventilation needed.";
+            $messages[DataCategoriesEnum::PM2_5] = "High PM2.5 levels detected: {$pm25} µg/m³. Ventilation needed.";
         }
 
         /**
@@ -245,7 +254,7 @@ class AirQualityReadingsService
          */
         if ($pm10 > 154) {
             $ventilationNeeded = true;
-            $messages[] = "High PM10 levels detected: {$pm10} µg/m³. Ventilation needed.";
+            $messages[DataCategoriesEnum::PM10] = "High PM10 levels detected: {$pm10} µg/m³. Ventilation needed.";
         }
 
         return [
@@ -308,5 +317,154 @@ class AirQualityReadingsService
         }
 
         return $nowCast;
+    }
+
+
+    public function getHourlyRate($hours)
+    {
+        $now = now();
+        $startTime = $now->copy()->subHours($hours);
+
+        $co2Rates = AirQualityReading::select(
+                DB::raw('AVG(temperature) AS avg_temperature'),
+                DB::raw('AVG(humidity) AS avg_humidity'),
+                DB::raw('AVG(co2) AS avg_co2'),
+                DB::raw('AVG(pm1_0) AS avg_pm1'),
+                DB::raw('AVG(pm2_5) AS avg_pm2_5'),
+                DB::raw('AVG(pm4) AS avg_pm4'),
+                DB::raw('AVG(pm10) AS avg_pm10'),
+                DB::raw('AVG(eco2) AS avg_eco2'),
+                DB::raw('AVG(tvoc) AS avg_tvoc'),
+                DB::raw('AVG(co2) as avg_co2'),
+                DB::raw('HOUR(created_at) as hour')
+            )
+            ->whereBetween('created_at', [$startTime, $now])
+            ->groupBy(DB::raw('HOUR(created_at)'))
+            ->get();
+
+        // $resp = [];
+        // foreach ($co2Rates as $key => $value) {
+        //     $co2 = [
+        //         'category_name' => 'CO2',
+        //         'date' => $value->hour,
+        //         'total' => round($value->avg_co2),
+        //     ];
+        //     $eco2 = [
+        //         'category_name' => 'eco2',
+        //         'date' => $value->hour,
+        //         'total' => round($value->avg_eco2),
+        //     ];
+        //     // $humid = [
+        //     //     'category_name' => 'humidity',
+        //     //     'date' => $value->hour,
+        //     //     'total' => round($value->avg_humidity),
+        //     // ];
+        //     array_push($resp, $co2, $eco2,$humid);
+        // }
+
+        return ($co2Rates);
+    }
+
+    public function getDailyRate($days)
+    {
+        $now = Carbon::now();
+        $startTime = $now->copy()->subDays($days);
+
+        $co2Rates = AirQualityReading::select(
+                DB::raw('AVG(temperature) AS avg_temperature'),
+                DB::raw('AVG(humidity) AS avg_humidity'),
+                DB::raw('AVG(co2) AS avg_co2'),
+                DB::raw('AVG(pm1_0) AS avg_pm1'),
+                DB::raw('AVG(pm2_5) AS avg_pm2_5'),
+                DB::raw('AVG(pm4) AS avg_pm4'),
+                DB::raw('AVG(pm10) AS avg_pm10'),
+                DB::raw('AVG(eco2) AS avg_eco2'),
+                DB::raw('AVG(tvoc) AS avg_tvoc'),
+                DB::raw('AVG(co2) as avg_co2'),
+                DB::raw('DATE(created_at) as date')
+            )
+            ->whereBetween('created_at', [$startTime, $now])
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->get();
+
+        return ($co2Rates);
+    }
+
+    /**
+     * Get Chart Data
+     *
+     * @param string $lastFilter
+     * @return \Illuminate\Support\Collection
+     */
+    public function getChartData($lastFilter)
+    {
+        $data = [];
+        switch ($lastFilter) {
+            case 'lastmonth':
+                $data = $this->getDailyRate(30);
+                
+                break;
+            case 'lastweek':
+                $data = $this->getDailyRate(7);
+                
+                break;
+            default:
+                $data = $this->getHourlyRate(24);
+                break;
+
+        }
+        
+        $resp = [];
+        foreach ($data as $key => $value) {
+            // $dateFormatted = optional($value)->hour ?? optional($value)->date;
+            $dateFormatted = optional($value)->hour !== null ? numberToTime($value->hour) : Carbon::parse($value->date)->format('d/m/Y');
+            $temperature = [
+                'category_name' => DataCategoriesEnum::TEMPERATURE,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_temperature, 2),
+            ];
+            $co2 = [
+                'category_name' => DataCategoriesEnum::CO2,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_co2),
+            ];
+            $eco2 = [
+                'category_name' => DataCategoriesEnum::ECO2,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_eco2),
+            ];
+            $humidity = [
+                'category_name' => DataCategoriesEnum::HUMIDITY,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_humidity, 2),
+            ];
+            $tvoc = [
+                'category_name' => DataCategoriesEnum::TVOC,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_tvoc),
+            ];
+            $pm1 = [
+                'category_name' => DataCategoriesEnum::PM1,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_pm1),
+            ];
+            $pm2_5 = [
+                'category_name' => DataCategoriesEnum::PM2_5,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_pm2_5),
+            ];
+            $pm4 = [
+                'category_name' => DataCategoriesEnum::PM4,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_pm4),
+            ];
+            $pm10 = [
+                'category_name' => DataCategoriesEnum::PM10,
+                'date' => $dateFormatted,
+                'total' => round($value->avg_pm10),
+            ];
+            array_push($resp, $temperature, $co2, $eco2, $humidity, $tvoc, $pm1, $pm2_5, $pm4, $pm10);
+        }
+        return collect($resp);
     }
 }
