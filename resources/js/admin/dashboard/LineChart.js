@@ -26,41 +26,7 @@ export default {
     },
     options: {
       type: Object,
-      default: () => ({
-        plugins: {
-          customCanvasBackgroundColor: {
-            color: 'lightGreen',
-          }
-        },
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true
-            },
-            gridLines: {
-              display: false
-            },
-            // scaleLabel: {
-            //   display: true,
-            //   labelString: 'Y Axis Label'
-            // }
-          }],
-          xAxes: [{
-            gridLines: {
-              display: false
-            },
-            // scaleLabel: {
-            //   display: true,
-            //   labelString: 'X Axis Label'
-            // }
-          }]
-        },
-        legend: {
-          display: true
-        },
-        responsive: true,
-        maintainAspectRatio: false
-      })
+      required: true,
     }
   },
   methods: {

@@ -7,7 +7,7 @@
     <title>Air Quality Measurement Widget</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <base target="_self">
-    <meta name="description" content="A Bootstrap 4 admin dashboard theme that will get you started. The sidebar toggles off-canvas on smaller screens. This example also include large stat blocks, modal and cards. The top navbar is controlled by a separate hamburger toggle button." />
+    <!-- <meta name="description" content="A Bootstrap 4 admin dashboard theme that will get you started. The sidebar toggles off-canvas on smaller screens. This example also include large stat blocks, modal and cards. The top navbar is controlled by a separate hamburger toggle button." /> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" value="notranslate">
     <link rel="shortcut icon" href="/images/cp_ico.png">
@@ -614,19 +614,19 @@
                                                         <div class="row">
                                                             <div class="col-lg mt-4 px-4 text-right">
                                                                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                                                    <label class="btn btn-light" :class="{ active: selectedOption === '24hrs' }">
-                                                                        <input type="radio" name="options" id="24hrs" value="24hrs" v-model="selectedOption"> 24 hrs
+                                                                    <label class="btn btn-light" :class="{ active: chartConfigOption.selectedOption === '24hrs' }">
+                                                                        <input type="radio" name="options" id="24hrs" value="24hrs" v-model="chartConfigOption.selectedOption"> 24 hrs
                                                                     </label>
-                                                                    <label class="btn btn-light" :class="{ active: selectedOption === 'lastweek' }">
-                                                                        <input type="radio" name="options" id="lastweek" value="lastweek" v-model="selectedOption"> Last week
+                                                                    <label class="btn btn-light" :class="{ active: chartConfigOption.selectedOption === 'lastweek' }">
+                                                                        <input type="radio" name="options" id="lastweek" value="lastweek" v-model="chartConfigOption.selectedOption"> Last week
                                                                     </label>
-                                                                    <!-- <label class="btn btn-outline-info" :class="{ active: selectedOption === 'lastmonth' }">
-                                                                        <input type="radio" name="options" id="lastmonth" value="lastmonth" v-model="selectedOption"> Last Month
+                                                                    <!-- <label class="btn btn-outline-info" :class="{ active: chartConfigOption.selectedOption === 'lastmonth' }">
+                                                                        <input type="radio" name="options" id="lastmonth" value="lastmonth" v-model="chartConfigOption.selectedOption"> Last Month
                                                                     </label> -->
                                                                 </div>
                                                             </div>
                                                             <div class="col-12">
-                                                                <line-chart-container :key="chartKey" :selected-option="selectedOption" :data-url="selectedItem.url" :title="selectedItem.label" :x-axis-label="selectedItem.xLabel" :y-axis-label="selectedItem.yLabel" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
+                                                                <line-chart-container :key="chartKey" :chart-config-option="chartConfigOption" :start-date="form.startDate" :end-date="form.endDate"></line-chart-container>
                                                             </div>
                                                         </div>
                                                     </div>
