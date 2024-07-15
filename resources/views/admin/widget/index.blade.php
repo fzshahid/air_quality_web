@@ -358,7 +358,7 @@
 
 <body class="bg-inverse">
     <div id="app" v-cloak>
-        <widget inline-template>
+        <aqi-widget inline-template>
             <div>
 
 
@@ -660,7 +660,7 @@
                     </div>
                 </div>
             </div>
-        </widget>
+        </aqi-widget>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue-toasted@2.1.2/dist/vue-toasted.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>

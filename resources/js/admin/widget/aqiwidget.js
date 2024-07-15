@@ -1,4 +1,4 @@
-Vue.component('widget', {
+Vue.component('AqiWidget', {
     props: {},
     data: function () {
         return {

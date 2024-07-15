@@ -1,1 +1,1 @@
-import Widget from './Widget.js';
+import AqiWidget from './aqiwidget.js';
