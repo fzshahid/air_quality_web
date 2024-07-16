@@ -25,7 +25,7 @@ class IndexAirQualityReading extends FormRequest
     public function rules(): array
     {
         return [
-            'orderBy' => 'in:id,temperature,humidity,co2,pm1_0,pm2_5,pm4,pm10,eco2,tvoc|nullable',
+            'orderBy' => 'in:id,temperature,humidity,co2,pm1_0,pm2_5,pm4,pm10,eco2,tvoc,created_at|nullable',
             'orderDirection' => 'in:asc,desc|nullable',
             'search' => 'string|nullable',
             'page' => 'integer|nullable',

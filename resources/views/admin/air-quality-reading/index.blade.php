@@ -42,14 +42,15 @@
                             <table class="table table-hover table-listing">
                                 <thead>
                                     <tr>
-                                        <th class="bulk-checkbox">
+                                        <!-- <th class="bulk-checkbox">
                                             <input class="form-check-input" id="enabled" type="checkbox" v-model="isClickedAll" v-validate="''" data-vv-name="enabled"  name="enabled_fake_element" @click="onBulkItemsClickedAllWithPagination()">
                                             <label class="form-check-label" for="enabled">
                                                 #
                                             </label>
-                                        </th>
+                                        </th> -->
 
                                         <th is='sortable' :column="'id'">{{ trans('admin.air-quality-reading.columns.id') }}</th>
+                                        <th is='sortable' :column="'created_at'">Created At</th>
                                         <th is='sortable' :column="'temperature'">{{ trans('admin.air-quality-reading.columns.temperature') }}</th>
                                         <th is='sortable' :column="'humidity'">{{ trans('admin.air-quality-reading.columns.humidity') }}</th>
                                         <th is='sortable' :column="'co2'">{{ trans('admin.air-quality-reading.columns.co2') }}</th>
@@ -76,30 +77,31 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="(item, index) in collection" :key="item.id" :class="bulkItems[item.id] ? 'bg-bulk' : ''">
-                                        <td class="bulk-checkbox">
+                                        <!-- <td class="bulk-checkbox">
                                             <input class="form-check-input" :id="'enabled' + item.id" type="checkbox" v-model="bulkItems[item.id]" v-validate="''" :data-vv-name="'enabled' + item.id"  :name="'enabled' + item.id + '_fake_element'" @click="onBulkItemClicked(item.id)" :disabled="bulkCheckingAllLoader">
                                             <label class="form-check-label" :for="'enabled' + item.id">
                                             </label>
-                                        </td>
+                                        </td> -->
 
                                     <td>@{{ item.id }}</td>
-                                        <td>@{{ item.temperature }}</td>
-                                        <td>@{{ item.humidity }}</td>
-                                        <td>@{{ item.co2 }}</td>
-                                        <td>@{{ item.pm1_0 }}</td>
-                                        <td>@{{ item.pm2_5 }}</td>
-                                        <td>@{{ item.pm4 }}</td>
-                                        <td>@{{ item.pm10 }}</td>
-                                        <td>@{{ item.eco2 }}</td>
-                                        <td>@{{ item.tvoc }}</td>
+                                    <td>@{{ formatDate(item.created_at) }}</td>
+                                        <td>@{{ item.temperature }}±0.5</td>
+                                        <td>@{{ item.humidity }}±3</td>
+                                        <td>@{{ item.co2 }}±30</td>
+                                        <td>@{{ item.pm1_0 }}±10</td>
+                                        <td>@{{ item.pm2_5 }}±10</td>
+                                        <td>@{{ item.pm4 }}±10</td>
+                                        <td>@{{ item.pm10 }}±10</td>
+                                        <td>@{{ item.eco2 }}±10</td>
+                                        <td>@{{ item.tvoc }}±10</td>
                                         
                                         <td>
                                             <div class="row no-gutters">
                                                 <div class="col-auto">
-                                                    <a class="btn btn-sm btn-spinner btn-warning" :href="item.resource_url + '/edit'" title="{{ trans('brackets/admin-ui::admin.btn.edit') }}" role="button"><i class="fa fa-plus"></i></a>
+                                                    <a class="btn btn-sm btn-spinner btn-info" :href="item.resource_url + '/edit'" title="{{ trans('brackets/admin-ui::admin.btn.edit') }}" role="button"><i class="fa fa-plus"></i></a>
                                                 </div>
                                                 <form class="col" @submit.prevent="deleteItem(item.resource_url)">
-                                                    <button type="submit" class="btn btn-sm btn-success" title="{{ trans('brackets/admin-ui::admin.btn.delete') }}"><i class="fa fa-trash-o"></i></button>
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="{{ trans('brackets/admin-ui::admin.btn.delete') }}"><i class="fa fa-trash-o"></i></button>
                                                 </form>
                                             </div>
                                         </td>

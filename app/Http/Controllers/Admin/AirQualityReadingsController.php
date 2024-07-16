@@ -49,7 +49,7 @@ class AirQualityReadingsController extends Controller
             $request,
 
             // set columns to query
-            ['id', 'temperature', 'humidity', 'co2', 'pm1_0', 'pm2_5', 'pm4', 'pm10', 'eco2', 'tvoc'],
+            ['id', 'temperature', 'humidity', 'co2', 'pm1_0', 'pm2_5', 'pm4', 'pm10', 'eco2', 'tvoc', 'created_at'],
 
             // set columns to searchIn
             ['id']
