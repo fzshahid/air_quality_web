@@ -110,5 +110,21 @@ return [
         ],
     ],
 
+    'subscriber' => [
+        'title' => 'Subscribers',
+
+        'actions' => [
+            'index' => 'Subscribers',
+            'create' => 'New Subscriber',
+            'edit' => 'Edit :name',
+        ],
+
+        'columns' => [
+            'id' => 'ID',
+            'email' => 'Email',
+            
+        ],
+    ],
+
     // Do not delete me :) I'm used for auto-generation
 ];

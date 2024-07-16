@@ -4,3 +4,4 @@ import './profile-edit-password';
 import './air-quality-reading';
 import './dashboard';
 import './widget';
+import './subscriber';

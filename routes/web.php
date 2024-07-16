@@ -72,3 +72,18 @@ Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->gro
         });
     });
 });
+
+
+Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->group(static function () {
+    Route::prefix('admin')->namespace('Admin')->name('admin/')->group(static function() {
+        Route::prefix('subscribers')->name('subscribers/')->group(static function() {
+            Route::get('/',                                             'SubscribersController@index')->name('index');
+            Route::get('/create',                                       'SubscribersController@create')->name('create');
+            Route::post('/',                                            'SubscribersController@store')->name('store');
+            Route::get('/{subscriber}/edit',                            'SubscribersController@edit')->name('edit');
+            Route::post('/bulk-destroy',                                'SubscribersController@bulkDestroy')->name('bulk-destroy');
+            Route::post('/{subscriber}',                                'SubscribersController@update')->name('update');
+            Route::delete('/{subscriber}',                              'SubscribersController@destroy')->name('destroy');
+        });
+    });
+});
