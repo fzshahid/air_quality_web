@@ -98,11 +98,33 @@ Vue.component('dashboard', {
                 endDate: moment().format('YYYY-MM-DD'),
             },
             isLoading: false,
+            lastUpdatedAt: null,
+            aqiData: {},
+            selectedItem: {},
+            aqiIndex: {
+                aqi_pm10: {},
+                aqi_pm2_5: {},
+            },
+            messages: {},
         }
     },
-    mounted() {
+    async mounted() {
+        await this.loadData();
     },
     methods: {
+        loadData: async function () {
+            try {
+                const apiUrl = "/api/get-widget-data";
+                const data = await axios.get(apiUrl);
+                this.aqiData = data.data.data;
+                this.messages = data.data.messages.messages;
+                this.aqiIndex = data.data.aqi_index;
+                this.lastUpdatedAt = data.data.updated_at;
+                // this.loaded = true;
+            } catch (e) {
+                console.error(e);
+            }
+        },
         reloadStats() {
 
         }

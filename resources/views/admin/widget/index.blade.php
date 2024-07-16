@@ -10,7 +10,7 @@
     <!-- <meta name="description" content="A Bootstrap 4 admin dashboard theme that will get you started. The sidebar toggles off-canvas on smaller screens. This example also include large stat blocks, modal and cards. The top navbar is controlled by a separate hamburger toggle button." /> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" value="notranslate">
-    <link rel="shortcut icon" href="/images/cp_ico.png">
+    <!-- <link rel="shortcut icon" href="/images/cp_ico.png"> -->
 
 
     <!--stylesheets / link tags loaded here-->
