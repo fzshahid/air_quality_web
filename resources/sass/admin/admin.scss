@@ -10,3 +10,40 @@
 .app-footer {
     visibility: hidden;
 }
+
+
+.aqi-good {
+    background-color: #00e400;
+    /* Green */
+    color: #fff;
+}
+
+.aqi-moderate {
+    background-color: #ffff00;
+    /* Yellow */
+    color: #000;
+}
+
+.aqi-unhealthy-for-sensitive-groups {
+    background-color: #ff7e00;
+    /* Orange */
+    color: #fff;
+}
+
+.aqi-unhealthy {
+    background-color: #ff0000;
+    /* Red */
+    color: #fff;
+}
+
+.aqi-very-unhealthy {
+    background-color: #8f3f97;
+    /* Purple */
+    color: #fff;
+}
+
+.aqi-hazardous {
+    background-color: #7e0023;
+    /* Maroon */
+    color: #fff;
+}

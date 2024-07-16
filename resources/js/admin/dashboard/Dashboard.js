@@ -111,6 +111,16 @@ Vue.component('dashboard', {
     async mounted() {
         await this.loadData();
     },
+    computed: {
+        lastUpdatedAtText: function () {
+            if (this.lastUpdatedAt) {
+                return moment(this.lastUpdatedAt).format('dddd DD/MM/YYYY HH:mm');
+            }
+            else {
+                return moment().format('dddd DD/MM/YYYY HH:mm');
+            }
+        }
+    },
     methods: {
         loadData: async function () {
             try {
