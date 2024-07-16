@@ -46,22 +46,13 @@ class NotifySubscribersCommand extends Command
     protected function notifySubscribers($messages)
     {
         // Get all subscribers
-        $subscribers = Subscriber::all();
+        $subscribers = Subscriber::query()->get();
 
         $subject = 'Air Quality Alert';
         foreach ($subscribers as $subscriber) {
-            $subscriber->notify(new AqiAlertNotification($subject, $messages));
+            $subscriber->notify(new AqiAlertNotification($subject, $messages, []));
         }
 
         $this->info('Subscribers notified successfully.');
-    }
-
-    protected function formatMessages($messages)
-    {
-        $formattedMessages = "Air Quality Alert:\n\n";
-        foreach ($messages as $category => $message) {
-            $formattedMessages .= $message . "\n";
-        }
-        return $formattedMessages;
     }
 }

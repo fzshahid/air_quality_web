@@ -11,7 +11,7 @@ class AqiAlertNotification extends Notification
 {
     use Queueable;
 
-    protected $subject, $messages, $aqimessages;
+    public $subject, $messages, $aqimessages;
 
     /**
      * Create a new notification instance.
@@ -45,8 +45,8 @@ class AqiAlertNotification extends Notification
     public function toMail($notifiable)
     {
         $mailable = (new MailMessage)
-                    ->subject($this->subject);
-
+            ->subject($this->subject);
+                 
         foreach ($this->messages as $key => $message) {
             $mailable->line($message);
         }
@@ -54,8 +54,7 @@ class AqiAlertNotification extends Notification
             $mailable->line($aqimessage);
         }
 
-        $mailable->action('View Dashboard', config('app.url'));
-        return $mailable;
+        return $mailable->action('View Dashboard', config('app.url'));
     }
 
     /**
