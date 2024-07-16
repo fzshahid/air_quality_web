@@ -9,8 +9,31 @@ use App\Http\Enums\DataCategoriesEnum;
 
 class AirQualityReadingsService
 {
+    /**
+     * Store AirQualityReading
+     *
+     * @param array $sanitized
+     * @return \App\Models\AirQualityReading
+     */
+    public function store(array $sanitized)
+    {
+        // Store the AirQualityReading
+        // $sanitized['pm1_0'] = round($sanitized['pm1_0'] / 1000, 2);
+        // $sanitized['pm2_5'] = round($sanitized['pm2_5'] / 1000, 2);
+        // $sanitized['pm4'] = round($sanitized['pm4'] / 1000, 2);
+        // $sanitized['pm10'] = round($sanitized['pm10'] / 1000, 2);
 
-    
+        $airQualityReading = \App\Models\AirQualityReading::create($sanitized);
+
+        $aqiData = $this->calculateAqiIndex($airQualityReading);
+
+        $airQualityReading->aqi_pm2_5 = $aqiData['aqi_pm2_5']['aqi'];
+        $airQualityReading->aqi_pm10 = $aqiData['aqi_pm10']['aqi'];
+        $airQualityReading->save();
+
+        return $airQualityReading;
+    }
+
     public function calculateAqiIndex(\App\Models\AirQualityReading $airQualityReading)
     {
         // Truncate the concentrations
@@ -148,6 +171,7 @@ class AirQualityReadingsService
                 "i_high" => 50,
                 'tag' => 'Good',
                 'class' => 'aqi-good',
+                'intensity' => 0,
                 'message' => 'Air Quality is Good!'
             ],
             [
@@ -216,6 +240,7 @@ class AirQualityReadingsService
         $ventilationNeeded = false;
         $messages = [];
 
+        $thresholds = config('constants.aqi_thresholds');
         /**
          * 
          * https://www.umweltbundesamt.de/en/topics/health/commissions-working-groups/german-committee-on-indoor-air-guide-values#undefined
@@ -223,38 +248,38 @@ class AirQualityReadingsService
          * https://www.umweltbundesamt.de/sites/default/files/medien/4031/bilder/dateien/0_hygienic_guide_values_20220704_en.pdf (German Guide for Co2, PM2.5)
          * Although carbon dioxide levels below 800 ppm were considered an indicator of adequate ventilation based on CDC recommendations
          */
-        if ($co2 > 800) {
+        if ($co2 > $thresholds['co2']) {
             $ventilationNeeded = true;
-            $messages[DataCategoriesEnum::CO2] = "High CO2 levels detected: {$co2} ppm. Ventilation needed.";
+            $messages[DataCategoriesEnum::CO2] = "High CO2 levels detected: {$co2} ppm.";
         }
 
-        if ($tvoc > 1000) {
+        if ($tvoc > $thresholds['tvoc']) {
             $ventilationNeeded = true;
-            $messages[DataCategoriesEnum::TVOC] = "High tvoc levels detected: {$tvoc} ppb. Ventilation needed.";
+            $messages[DataCategoriesEnum::TVOC] = "High tvoc levels detected: {$tvoc} ppb.";
         }
 
         /**
          * https://www.epa.gov/mold/brief-guide-mold-moisture-and-your-home
          */
-        if ($humidity < 30 || $humidity > 50) {
+        if ($humidity < $thresholds['min_humidity'] || $humidity > $thresholds['max_humidity']) {
             $ventilationNeeded = true;
-            $messages[DataCategoriesEnum::HUMIDITY] = "Uncomfortable humidity levels: {$humidity}%. Ventilation needed.";
+            $messages[DataCategoriesEnum::HUMIDITY] = "Uncomfortable humidity levels: {$humidity}%.";
         }
 
         /**
          * https://document.airnow.gov/technical-assistance-document-for-the-reporting-of-daily-air-quailty.pdf
          */
-        if ($pm25 > 35.4) {
+        if ($pm25 > $thresholds['pm2_5']) {
             $ventilationNeeded = true;
-            $messages[DataCategoriesEnum::PM2_5] = "High PM2.5 levels detected: {$pm25} µg/m³. Ventilation needed.";
+            $messages[DataCategoriesEnum::PM2_5] = "High PM2.5 levels detected: {$pm25} µg/m³.";
         }
 
         /**
          * https://document.airnow.gov/technical-assistance-document-for-the-reporting-of-daily-air-quailty.pdf
          */
-        if ($pm10 > 154) {
+        if ($pm10 > $thresholds['pm10']) {
             $ventilationNeeded = true;
-            $messages[DataCategoriesEnum::PM10] = "High PM10 levels detected: {$pm10} µg/m³. Ventilation needed.";
+            $messages[DataCategoriesEnum::PM10] = "High PM10 levels detected: {$pm10} µg/m³.";
         }
 
         return [
@@ -282,12 +307,12 @@ class AirQualityReadingsService
         $minPM = collect($last12Hours)->filter(function ($value) {
             return !is_null($value);
         })
-        ->min();
+            ->min();
 
         $maxPM = collect($last12Hours)->filter(function ($value) {
             return !is_null($value);
         })
-        ->max();
+            ->max();
 
         // Calculate the range
         $range = $maxPM - $minPM;
@@ -326,41 +351,21 @@ class AirQualityReadingsService
         $startTime = $now->copy()->subHours($hours);
 
         $co2Rates = AirQualityReading::select(
-                DB::raw('AVG(temperature) AS avg_temperature'),
-                DB::raw('AVG(humidity) AS avg_humidity'),
-                DB::raw('AVG(co2) AS avg_co2'),
-                DB::raw('AVG(pm1_0) AS avg_pm1'),
-                DB::raw('AVG(pm2_5) AS avg_pm2_5'),
-                DB::raw('AVG(pm4) AS avg_pm4'),
-                DB::raw('AVG(pm10) AS avg_pm10'),
-                DB::raw('AVG(eco2) AS avg_eco2'),
-                DB::raw('AVG(tvoc) AS avg_tvoc'),
-                DB::raw('AVG(co2) as avg_co2'),
-                DB::raw('HOUR(created_at) as hour')
-            )
+            DB::raw('AVG(temperature) AS avg_temperature'),
+            DB::raw('AVG(humidity) AS avg_humidity'),
+            DB::raw('AVG(co2) AS avg_co2'),
+            DB::raw('AVG(pm1_0) AS avg_pm1'),
+            DB::raw('AVG(pm2_5) AS avg_pm2_5'),
+            DB::raw('AVG(pm4) AS avg_pm4'),
+            DB::raw('AVG(pm10) AS avg_pm10'),
+            DB::raw('AVG(eco2) AS avg_eco2'),
+            DB::raw('AVG(tvoc) AS avg_tvoc'),
+            DB::raw('AVG(co2) as avg_co2'),
+            DB::raw('HOUR(created_at) as hour')
+        )
             ->whereBetween('created_at', [$startTime, $now])
             ->groupBy(DB::raw('HOUR(created_at)'))
             ->get();
-
-        // $resp = [];
-        // foreach ($co2Rates as $key => $value) {
-        //     $co2 = [
-        //         'category_name' => 'CO2',
-        //         'date' => $value->hour,
-        //         'total' => round($value->avg_co2),
-        //     ];
-        //     $eco2 = [
-        //         'category_name' => 'eco2',
-        //         'date' => $value->hour,
-        //         'total' => round($value->avg_eco2),
-        //     ];
-        //     // $humid = [
-        //     //     'category_name' => 'humidity',
-        //     //     'date' => $value->hour,
-        //     //     'total' => round($value->avg_humidity),
-        //     // ];
-        //     array_push($resp, $co2, $eco2,$humid);
-        // }
 
         return ($co2Rates);
     }
@@ -371,18 +376,18 @@ class AirQualityReadingsService
         $startTime = $now->copy()->subDays($days);
 
         $co2Rates = AirQualityReading::select(
-                DB::raw('AVG(temperature) AS avg_temperature'),
-                DB::raw('AVG(humidity) AS avg_humidity'),
-                DB::raw('AVG(co2) AS avg_co2'),
-                DB::raw('AVG(pm1_0) AS avg_pm1'),
-                DB::raw('AVG(pm2_5) AS avg_pm2_5'),
-                DB::raw('AVG(pm4) AS avg_pm4'),
-                DB::raw('AVG(pm10) AS avg_pm10'),
-                DB::raw('AVG(eco2) AS avg_eco2'),
-                DB::raw('AVG(tvoc) AS avg_tvoc'),
-                DB::raw('AVG(co2) as avg_co2'),
-                DB::raw('DATE(created_at) as date')
-            )
+            DB::raw('AVG(temperature) AS avg_temperature'),
+            DB::raw('AVG(humidity) AS avg_humidity'),
+            DB::raw('AVG(co2) AS avg_co2'),
+            DB::raw('AVG(pm1_0) AS avg_pm1'),
+            DB::raw('AVG(pm2_5) AS avg_pm2_5'),
+            DB::raw('AVG(pm4) AS avg_pm4'),
+            DB::raw('AVG(pm10) AS avg_pm10'),
+            DB::raw('AVG(eco2) AS avg_eco2'),
+            DB::raw('AVG(tvoc) AS avg_tvoc'),
+            DB::raw('AVG(co2) as avg_co2'),
+            DB::raw('DATE(created_at) as date')
+        )
             ->whereBetween('created_at', [$startTime, $now])
             ->groupBy(DB::raw('DATE(created_at)'))
             ->get();
@@ -402,18 +407,17 @@ class AirQualityReadingsService
         switch ($lastFilter) {
             case 'lastmonth':
                 $data = $this->getDailyRate(30);
-                
+
                 break;
             case 'lastweek':
                 $data = $this->getDailyRate(7);
-                
+
                 break;
             default:
                 $data = $this->getHourlyRate(24);
                 break;
-
         }
-        
+
         $resp = [];
         foreach ($data as $key => $value) {
             // $dateFormatted = optional($value)->hour ?? optional($value)->date;

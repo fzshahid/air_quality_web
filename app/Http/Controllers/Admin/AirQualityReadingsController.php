@@ -92,7 +92,8 @@ class AirQualityReadingsController extends Controller
         $sanitized = $request->getSanitized();
 
         // Store the AirQualityReading
-        $airQualityReading = AirQualityReading::create($sanitized);
+        // $airQualityReading = AirQualityReading::create($sanitized);
+        $airQualityReading = $this->airQualityReadingsService->store($sanitized);
 
         if ($request->ajax()) {
             return ['redirect' => url('admin/air-quality-readings'), 'message' => trans('brackets/admin-ui::admin.operation.succeeded')];
@@ -146,6 +147,12 @@ class AirQualityReadingsController extends Controller
 
         // Update changed values AirQualityReading
         $airQualityReading->update($sanitized);
+
+        $aqiData = $this->airQualityReadingsService->calculateAqiIndex($airQualityReading);
+
+        $airQualityReading->aqi_pm2_5 = $aqiData['aqi_pm2_5']['aqi'];
+        $airQualityReading->aqi_pm10 = $aqiData['aqi_pm10']['aqi'];
+        $airQualityReading->save();
 
         if ($request->ajax()) {
             return [

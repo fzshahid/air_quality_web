@@ -7,22 +7,18 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AqiAlertNotification extends Notification
+class SubscribersAlertNotification extends Notification
 {
     use Queueable;
-
-    protected $subject, $messages, $aqimessages;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(string $subject, array $messages, array $aqimessages = [])
+    public function __construct()
     {
-        $this->subject = $subject;
-        $this->messages = $messages;
-        $this->aqimessages = $aqimessages;
+        //
     }
 
     /**
@@ -44,18 +40,10 @@ class AqiAlertNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $mailable = (new MailMessage)
-                    ->subject($this->subject);
-
-        foreach ($this->messages as $key => $message) {
-            $mailable->line($message);
-        }
-        foreach ($this->aqimessages as $key => $aqimessage) {
-            $mailable->line($aqimessage);
-        }
-
-        $mailable->action('View Dashboard', config('app.url'));
-        return $mailable;
+        return (new MailMessage)
+                    ->line('The introduction to the notification.')
+                    ->action('Notification Action', url('/'))
+                    ->line('Thank you for using our application!');
     }
 
     /**

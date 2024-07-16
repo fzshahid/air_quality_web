@@ -35,19 +35,19 @@ class AirQualityReadingsAPIController extends Controller
         // Sanitize input
         $sanitized = $request->getSanitized();
         // Store the AirQualityReading
-        // $airQualityReading = $this->airQualityReadingsService->storeSps30($sanitized);
-        $sanitized['pm1_0'] = round($sanitized['pm1_0'] / 1000, 2);
-        $sanitized['pm2_5'] = round($sanitized['pm2_5'] / 1000, 2);
-        $sanitized['pm4'] = round($sanitized['pm4'] / 1000, 2);
-        $sanitized['pm10'] = round($sanitized['pm10'] / 1000, 2);
+        // $sanitized['pm1_0'] = round($sanitized['pm1_0'] / 1000, 2);
+        // $sanitized['pm2_5'] = round($sanitized['pm2_5'] / 1000, 2);
+        // $sanitized['pm4'] = round($sanitized['pm4'] / 1000, 2);
+        // $sanitized['pm10'] = round($sanitized['pm10'] / 1000, 2);
 
-        $airQualityReading = \App\Models\AirQualityReading::create($sanitized);
+        // $airQualityReading = \App\Models\AirQualityReading::create($sanitized);
         
-        $aqiData = $this->airQualityReadingsService->calculateAqiIndex($airQualityReading);
+        // $aqiData = $this->airQualityReadingsService->calculateAqiIndex($airQualityReading);
         
-        $airQualityReading->aqi_pm2_5 = $aqiData['aqi_pm2_5']['aqi'];
-        $airQualityReading->aqi_pm10 = $aqiData['aqi_pm10']['aqi'];
-        $airQualityReading->save();
+        // $airQualityReading->aqi_pm2_5 = $aqiData['aqi_pm2_5']['aqi'];
+        // $airQualityReading->aqi_pm10 = $aqiData['aqi_pm10']['aqi'];
+        // $airQualityReading->save();
+        $airQualityReading = $this->airQualityReadingsService->store($sanitized);
 
         return response()->json([
             'message' => 'Aqi reading stored successfully!',
