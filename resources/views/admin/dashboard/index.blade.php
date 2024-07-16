@@ -7,7 +7,7 @@
 <dashboard v-cloak inline-template :action="''">
     <div>
         <div class="alert alert-danger" role="alert" v-if="messages.humidity">
-            <i class="mdi mdi-alert-circle-outline "></i> High humidity levels detected. Consider using a dehumidifier.
+            <i class="fa fa-warning "></i> High humidity levels detected. Consider using a dehumidifier.
         </div>
         <div class="alert alert-danger" role="alert" v-if="messages.co2">
             High CO₂ levels detected. Ensure good ventilation.
@@ -16,7 +16,7 @@
             <div class="col-xl-6 col-md-6 col-lg-6 d-flex">
                 <div class="card w-100">
                     <div class="card-block">
-                        <h6 class="text-uppercase text-dark">Air Quality PM2.5 <i v-if="messages.pm2_5" class="mdi mdi-alert-circle-outline text-danger "></i></h6>
+                        <h6 class="text-uppercase text-dark">Air Quality PM2.5 <i v-if="messages.pm2_5" class="fa fa-warning text-danger "></i></h6>
                         <!-- <div class="h3 text-dark">@{{aqiData.pm2_5}} <span class="text-small text-dark">±10 µg/m³</span></div> -->
                         <div class="row">
                             <div class="col-6 h4 text-dark">PM2.5: <span class="text-small text-dark">@{{aqiData.pm2_5}}±10 µg/m³</span></div>
@@ -32,7 +32,7 @@
             <div class="col-xl-6 col-md-6 col-lg-6 d-flex">
                 <div class="card w-100">
                     <div class="card-block">
-                        <h6 class="text-uppercase text-dark">Air Quality PM10 <i v-if="messages.pm10" class="mdi mdi-alert-circle-outline text-danger "></i></h6>
+                        <h6 class="text-uppercase text-dark">Air Quality PM10 <i v-if="messages.pm10" class="fa fa-warning text-danger "></i></h6>
                         <div class="row">
                             <div class="col-6 h4 text-dark">PM10: <span class="text-small text-dark">@{{aqiData.pm10}}±10 µg/m³</span></div>
                             <div class="col-6 h4 text-dark">AQI: <span class="text-small text-dark">@{{aqiIndex.aqi_pm10.aqi}}</span></div>
@@ -49,7 +49,7 @@
             <div class="col-xl-3 col-lg-6">
                 <div class="card">
                     <div class="card-block">
-                        <h6 class="text-uppercase text-dark">Temperature <i v-if="messages.temperature" class="mdi mdi-alert-circle-outline text-danger "></i></h6>
+                        <h6 class="text-uppercase text-dark">Temperature <i v-if="messages.temperature" class="fa fa-warning text-danger "></i></h6>
                         <div class="h3 text-dark">@{{aqiData.temperature}} <span class="text-small text-dark">±0.5°C</span></div>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
             <div class="col-xl-3 col-lg-6">
                 <div class="card">
                     <div class="card-block">
-                        <h6 class="text-uppercase text-dark">Humidity <i v-if="messages.humidity" class="mdi mdi-alert-circle-outline text-danger "></i></h6>
+                        <h6 class="text-uppercase text-dark">Humidity <i v-if="messages.humidity" class="fa fa-warning text-danger "></i></h6>
                         <div class="h3 text-dark">@{{ aqiData.humidity }} <span class="text-small text-dark">±3%</span></div>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
             <div class="col-xl-3 col-lg-6">
                 <div class="card">
                     <div class="card-block">
-                        <h6 class="text-uppercase text-dark">CO₂ <i v-if="messages.co2" class="mdi mdi-alert-circle-outline text-danger "></i></h6>
+                        <h6 class="text-uppercase text-dark">CO₂ <i v-if="messages.co2" class="fa fa-warning text-danger "></i></h6>
                         <div class="h3 text-dark">@{{aqiData.co2}} <span class="text-small text-dark">±30 ppm</span></div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
             <div class="col-xl-3 col-lg-6">
                 <div class="card">
                     <div class="card-block">
-                        <h6 class="text-uppercase text-dark">TVOC <i v-if="messages.tvoc" class="mdi mdi-alert-circle-outline text-danger "></i></h6>
+                        <h6 class="text-uppercase text-dark">TVOC <i v-if="messages.tvoc" class="fa fa-warning text-danger "></i></h6>
                         <div class="h3 text-dark">@{{aqiData.tvoc}} <span class="text-small text-dark">±10 ppb</span></div>
                     </div>
                 </div>
