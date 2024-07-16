@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\AdminUser\ImpersonalLoginAdminUser;
 use App\Http\Requests\Admin\AdminUser\IndexAdminUser;
 use App\Http\Requests\Admin\AdminUser\StoreAdminUser;
 use App\Http\Requests\Admin\AdminUser\UpdateAdminUser;
+use App\Notifications\UserSubscribed;
 use Brackets\AdminAuth\Models\AdminUser;
 use Spatie\Permission\Models\Role;
 use Brackets\AdminAuth\Activation\Facades\Activation;
@@ -105,6 +106,7 @@ class AdminUsersController extends Controller
         // But we do have a roles, so we need to attach the roles to the adminUser
         $adminUser->roles()->sync(collect($request->input('roles', []))->map->id->toArray());
 
+        $adminUser->notify(new UserSubscribed());
         if ($request->ajax()) {
             return ['redirect' => url('admin/admin-users'), 'message' => trans('brackets/admin-ui::admin.operation.succeeded')];
         }

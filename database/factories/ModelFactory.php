@@ -17,4 +17,21 @@ $factory->define(Brackets\AdminAuth\Models\AdminUser::class, function (Faker\Gen
         'last_login_at' => $faker->dateTime,
         
     ];
+});/** @var  \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\Models\AirQualityReading::class, static function (Faker\Generator $faker) {
+    return [
+        'temperature' => $faker->randomFloat,
+        'humidity' => $faker->randomFloat,
+        'co2' => $faker->randomFloat,
+        'pm1_0' => $faker->randomFloat,
+        'pm2_5' => $faker->randomFloat,
+        'pm4' => $faker->randomFloat,
+        'pm10' => $faker->randomFloat,
+        'eco2' => $faker->randomFloat,
+        'tvoc' => $faker->randomFloat,
+        'created_at' => $faker->dateTime,
+        'updated_at' => $faker->dateTime,
+        
+        
+    ];
 });
