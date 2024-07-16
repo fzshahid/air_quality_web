@@ -40,7 +40,7 @@
                             <div class="col-6 h4 text-dark">PM10: <span class="text-small text-dark">@{{aqiData.pm10}}±10 µg/m³</span></div>
                             <div class="col-6 h4 text-dark">AQI: <span class="text-small text-dark">@{{aqiIndex.aqi_pm10.aqi}}</span></div>
                         </div>
-                        <div class="alert" role="alert">
+                        <div class="alert" :class="aqiIndex.aqi_pm10.class" role="alert">
                             <h4 class="alert-heading">@{{aqiIndex.aqi_pm10.tag}}</h4>
                             <p>@{{aqiIndex.aqi_pm10.message}}</p>
                         </div>
