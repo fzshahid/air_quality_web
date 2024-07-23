@@ -18,6 +18,10 @@ import './index';
 import 'craftable/dist/ui';
 import CommitChart from './dashboard/CommitChart';
 import BarChartConatiner from './dashboard/BarChartContainer.vue';
+// register the plugin on vue
+import Toasted from 'vue-toasted';
+ 
+Vue.use(Toasted)
 
 Vue.component('multiselect', Multiselect);
 Vue.use(VeeValidate, {strict: true});

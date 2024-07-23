@@ -586,7 +586,7 @@
                                                     <div class="col-12">
                                                         <div class="d-flex align-items-baseline">
                                                             <p class="mb-0 mr-3">Subscribe to the realtime email notifications.</p>
-                                                            <button class="btn btn-dark" @click="showModal = true">Subscribe</button>
+                                                            <button class="btn btn-dark" @click="openSubscriptionModal">Subscribe</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -639,12 +639,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal fade" id="subscribeModal" tabindex="-1" aria-labelledby="subscribeModalLabel" aria-hidden="true" ref="subscribeModal">
+                    <div v-if="modalKey" class="modal fade" id="subscribeModal" tabindex="-1" aria-labelledby="subscribeModalLabel" aria-hidden="true" ref="subscribeModal">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="subscribeModalLabel">Subscribe to Notifications</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <button type="button" class="close" @click="showModal=false" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
@@ -652,7 +652,7 @@
                                     <input type="email" class="form-control" v-model="email" placeholder="Enter your email">
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-secondary" @click="showModal=false">Close</button>
                                     <button type="button" class="btn btn-primary" @click="subscribe">Submit</button>
                                 </div>
                             </div>

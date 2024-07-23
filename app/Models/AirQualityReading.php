@@ -9,12 +9,12 @@ class AirQualityReading extends Model
     protected $fillable = [
         'temperature',
         'humidity',
-        'co2',
-        'pm1_0',
-        'pm2_5',
-        'pm4',
-        'pm10',
-        'eco2',
+        'co2', //ppm
+        'pm1_0', // µg/m3
+        'pm2_5', // µg/m3
+        'pm4', // µg/m3
+        'pm10', //µg/m3
+        'eco2', //
         'tvoc',
         'aqi_pm2_5',
         'aqi_pm10',

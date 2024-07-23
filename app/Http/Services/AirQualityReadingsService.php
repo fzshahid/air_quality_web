@@ -253,15 +253,16 @@ class AirQualityReadingsService
             $messages[DataCategoriesEnum::CO2] = "High CO2 levels detected: {$co2} ppm.";
         }
 
-        if ($tvoc > $thresholds['tvoc']) {
-            $ventilationNeeded = true;
-            $messages[DataCategoriesEnum::TVOC] = "High tvoc levels detected: {$tvoc} ppb.";
-        }
+        // if ($tvoc > $thresholds['tvoc']) {
+        //     $ventilationNeeded = true;
+        //     $messages[DataCategoriesEnum::TVOC] = "High tvoc levels detected: {$tvoc} ppb.";
+        // }
 
         /**
          * https://www.epa.gov/mold/brief-guide-mold-moisture-and-your-home
          */
-        if ($humidity < $thresholds['min_humidity'] || $humidity > $thresholds['max_humidity']) {
+        // if ($humidity < $thresholds['min_humidity'] || $humidity > $thresholds['max_humidity']) {
+        if ($humidity > $thresholds['max_humidity']) {
             $ventilationNeeded = true;
             $messages[DataCategoriesEnum::HUMIDITY] = "Uncomfortable humidity levels: {$humidity}%.";
         }

@@ -87,7 +87,7 @@ Vue.component("line-chart-container", {
       },
       scales: {
         y: {
-          beginAtZero: true,
+          // beginAtZero: true,
           title: {
             text: 'k',
             display: true,

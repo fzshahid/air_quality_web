@@ -13,7 +13,7 @@ Vue.component('AqiWidget', {
                     url: 'dashboard/line-chart-humidity',
                     xLabel: 'Time',
                     yLabel: 'Percentage',
-                    unit: '%',
+                    unit: '% RH',
                 },
                 temperature: {
                     label: 'Temperature',
@@ -75,7 +75,8 @@ Vue.component('AqiWidget', {
                 xLabel: '',
                 yLabel: '',
                 title: '',
-            }
+            },
+            modalKey: +new Date(),
         }
     },
     async mounted() {
@@ -102,6 +103,10 @@ Vue.component('AqiWidget', {
         },
     },
     methods: {
+        openSubscriptionModal() {
+            this.modalKey++;
+            this.showModal = true;
+        },
         formatTimeAgo(timestamp) {
             const date = new Date(timestamp);
             return date.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});

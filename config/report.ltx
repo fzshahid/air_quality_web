@@ -1,0 +1,432 @@
+\documentclass[12pt]{article}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{float} % for the [H] specifier
+
+\title{Indoor Air Quality Monitoring System Using Wireless Sensor Network Web Application}
+\author{Muhammad Faizan, Muhammad Usman Ghani, Shahzaib Sher Ali, \\
+Syed Hassnain Kazmi \\
+\\
+        Frankfurt University of Applied Sciences}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+Air quality has a significant impact on public health and the environment. Monitoring air quality in real-time can help people to know when there is a risk to their health. This project proposes the development of an air quality monitoring system using Nordic micro-controllers, state-of-the-art sensors, Raspberry Pi, and a cloud-based web application to visualize data and notify users when needed.
+
+\section{Literature Review}
+\subsection{Air Quality Sensors}
+ In this project we will use the Sensirion SCD41 for temperature, humidity, and CO$_2$ measurements, the Sensirion SPS30 for particulate matter (PM) detection, and the CCS811 for total volatile organic compound (TVOC) value and carbon dioxide equivalent (eCO$_2$) level.
+
+\subsubsection{Sensirion SCD41}
+The Sensirion SCD41\cite{scd41datasheet} sensor is used to measure CO$_2$, temperature, and humidity. The measurement ranges and units are:
+\begin{itemize}
+    \item CO$_2$: 400-5000 ppm
+    \item Temperature: -10 to 60 °C
+    \item Humidity: 0 to 100\% RH
+\end{itemize}
+
+\subsubsection{Sensirion SPS30}
+The Sensirion SPS30\cite{sps30datasheet} particulate matter sensor uses laser scattering technology to measure particle size range PM$_{1.0}$, PM$_{2.5}$, PM$_{4}$, and PM$_{10}$. Its range of mass concentration is 0-1000 µg/m$^3$
+
+\begin{itemize}
+    \item PM1.0: 0.3 to 1.0 µm
+    \item PM2.5: 0.3 to 2.5 µm
+    \item PM4: 0.3 to 4.0 µm
+    \item PM10: 0.3 to 10.0 µm
+\end{itemize}
+
+
+\subsubsection{CCS811}
+The CCS811\cite{ccs811datasheet} sensor is a digital gas which measures VOCs and equivalent CO$_2$ (eCO$_2$). The measurement ranges and units are:
+\begin{itemize}
+    \item Total Volatile Organic Compounds(TVOCs): 0-1187 parts/billion
+    \item Carbon Dioxide Equivalent(eCO$_2$): 400-8192 parts/million
+\end{itemize} 
+
+\section{Measuring Errors}
+Measuring errors refer to the inaccuracies or deviations in the measured values from the true values. These errors can arise from various sources and affect the accuracy and reliability of the measurement system. 
+
+\subsection{Types of measuring errors are as follows}
+\begin{itemize}
+    \item \textbf{Systematic Errors}: Consistent and predictable errors caused by imperfect calibration, environmental conditions, or instrument imperfections. They can often be corrected once identified.
+    \begin{enumerate}
+    \item Calibration Errors
+    \item Environmental Errors
+    \item Instrumental Errors
+    \end{enumerate}
+    \item \textbf{Random Errors}: Unpredictable variations in the measurement process caused by unknown and uncontrollable factors. These errors can be minimized but not entirely eliminated.
+     \begin{enumerate}
+    \item Noise
+    \item Human Errors
+    \end{enumerate}
+    \item \textbf{Gross Errors}: Large and obvious errors typically due to human mistakes, such as incorrect readings, wrong settings, or data recording errors.
+\end{itemize}
+
+\subsection{Measuring Errors in Measuring Chain}
+Measuring errors can appear at various points in the measuring chain:
+     \begin{itemize}
+         \item \textbf{Sensor Level}: Errors in sensor calibration or response to environmental conditions. 
+        \item \textbf{Data Transmission}: Errors due to signal interference or loss during wireless transmission from sensors to the gateway.
+       \item \textbf{Data Processing}: Errors introduced during data normalization, filtering, or conversion processes.
+        \item \textbf{Data Storage}: Errors due to data corruption or inaccuracies during storage in the cloud.
+        \item \textbf{Data Visualization}:  Errors in displaying the data, such as incorrect scaling or interpretation in the web application.
+     \end{itemize}
+
+\subsection{Error Propagation in the Measuring Chain and Over Time}
+Error propagation refers to how errors can accumulate or amplify as data moves through the measuring chain. For instance:
+
+\begin{itemize}
+    \item Sensor Errors can propagate and magnify when transmitted wirelessly to the gateway, especially if there are transmission errors.
+    \item Processing Errors during data normalization or filtering can introduce new errors or amplify existing ones, affecting the final output.
+    \item Over Time, systematic errors might cause a drift in sensor readings, requiring regular re calibration to maintain accuracy.
+\end{itemize}
+
+\subsection{Mathematical Tools for Error Control}
+Several mathematical tools and techniques can be used for error control:
+
+\begin{enumerate}
+    \item \textbf{Statistical Analysis}: Using mean, median, standard deviation to understand and reduce random errors.
+    \item \textbf{Calibration Techniques}: Regular calibration using known standards to minimize systematic errors.
+    \item \textbf{Filtering Methods}: Implementing filters like Kalman filter to reduce noise and smooth data.
+    \item \textbf{Error Propagation Analysis}: Applying propagation of uncertainty formulas to understand how errors affect final measurements.
+\end{enumerate}
+
+\section{Measuring Errors in Project Displays}
+In our displays, we will show the following:
+\begin{itemize}
+    \item \textbf{Real-Time Data}: Display real-time sensor readings with confidence intervals to indicate the possible range of error. 
+    Example: "CO$_2$ Level: 800 ppm ± 50 ppm".
+     \item \textbf{Historical Data}: Graphs showing trends over time (Last 24 hrs, Last Week) with the hourly and daily average to .
+    Example: A line chart for temperature readings with shaded areas representing the error margins.
+    \item \textbf{Alerts and Notifications}: Clearly indicate the thresholds and include a margin for error to avoid unnecessary alarms.
+    Example: "Alert: CO$_2$ levels above 1000 ppm (considering an error margin of ± 50 ppm)".
+\end{itemize}
+
+\section{Related Scientific Work Update}
+The project builds on various existing research and technologies in the fields of air quality monitoring, wireless sensor networks, and cloud computing. Key references include:
+\begin{itemize}
+    \item \textbf{Air Quality Monitoring Systems}:
+Real-time air quality monitoring systems are crucial for public health. Studies have validated the use of sensors such as the Sensirion SCD41 and SPS30 for monitoring CO$_2$ and particulate matter in various environmental monitoring contexts. \cite{scd41datasheet}\cite{sps30datasheet}
+    \item \textbf{Wireless Sensor Networks (WSNs)}:
+Extensive research on WSNs has demonstrated their potential in environmental monitoring applications. These networks provide scalable and flexible solutions for data collection and transmission. \cite{akyildiz2002}
+    \item \textbf{Cloud Computing for Data Processing}: 
+Integrating cloud computing with sensor networks enhances data processing capabilities, enabling complex analyses and real-time data visualization. \cite{scpcap2010}
+    \item \textbf{Health Impacts of Air Quality:} 
+Due to their links to adverse health effects, research by the U.S. Environmental Protection Agency (EPA) underscores the importance of monitoring pollutants like PM2.5, PM10, VOCs, and CO$_2$. \cite{epa2018aqi}
+\end{itemize}
+
+
+\section{Statement of the Research Questions}
+The research questions of this project are:
+\begin{enumerate}
+    \item Evaluating the Efficiency of Wireless Sensor Networks in Real-Time Indoor Air Quality Monitoring.
+    \item Best Sensor Configurations for Precise Indoor Air Quality Monitoring.
+    \item The Role of Cloud Computing in Enhancing Air Quality Data Processing and Visualization.
+    \item The Effects of Indoor Air Quality on Public Health.
+\end{enumerate}
+
+\section{Project Objectives}
+The primary objectives of this project are:
+\begin{enumerate}
+    \item Develop a wireless sensor network using Nordic micro-controllers to measure air quality parameters.
+    \item Integrate the sensor network with a Raspberry Pi gateway to collect and transmit data to the cloud.
+    \item Implement a cloud-based system for data storage and processing.
+    \item Create a web-based application for real-time data visualization and analysis.
+\end{enumerate}
+
+
+\begin{figure}[H] % H forces the figure to be placed exactly here
+\centering
+\includegraphics[width=36pc,height=20pc]{seq_diagram_ssns.drawio.png}
+\caption{Sequence diagram of the proposed system}
+\label{fig_seq_diagram}
+\end{figure}
+
+\begin{figure}[H] % H forces the figure to be placed exactly here
+\centering
+\includegraphics[width=36pc,height=20pc]{activity_diagram_ssns.drawio.png}
+\caption{Activity diagram of the proposed system}
+\label{fig_activity_diagram}
+\vspace*{0pt}
+\end{figure}
+
+\section{Methodology}
+\subsection{Hardware Components}
+\begin{itemize}
+    \item \textbf{Sensors}: Sensirion SCD41, SPS30, CCS811.
+    \item \textbf{Microcontrollers}: Nordic nRF52840-DK.
+    \item \textbf{Gateway}: Raspberry Pi 5.
+\end{itemize}
+
+\subsection{System Architecture}
+\begin{itemize}
+    \item \textbf{Microcontroller Initialization}
+   \begin{enumerate}
+       \item Three connected sensors: SCD41, SPS30, and CCS811.
+       \item Configures buttons as inputs.
+       \item Initializes the CoAP client on a specific port.
+   \end{enumerate}
+\end{itemize}
+
+\begin{itemize}
+    \item \textbf{Sensor Data Collection Trigger}
+   \begin{enumerate}
+       \item All sensors start collecting their respective data values.
+       \item Microcontroller registers a work item in the system queue.
+   \end{enumerate}
+\end{itemize}
+
+\begin{itemize}
+    \item \textbf{Data Processing and Transmission}
+   \begin{enumerate}
+       \item Populating it in a character buffer array.
+       \item Sending it to the CoAP server
+       \item Receiving confirmation of data delivery through a callback function.
+   \end{enumerate}
+\end{itemize}
+
+\begin{itemize}
+    \item \textbf{Receiver Setup}
+   \begin{enumerate}
+       \item Raspberry Pi with nRF52840-Dongle acts as the receiver.
+       \item Python script running on Raspberry Pi:
+       \begin{itemize}
+           \item Initializes the CoAP server.
+           \item Prepares Raspberry Pi to receive data on the same port used by the client.
+       \end{itemize}
+   \end{enumerate}
+\end{itemize}
+
+\begin{itemize}
+    \item \textbf{Data Handling on Raspberry Pi}
+   \begin{enumerate}
+       \item Script extracts the payload.
+       \item Makes an API call to a web application server.
+   \end{enumerate}
+\end{itemize}
+
+
+\begin{itemize}
+    \item \textbf{Web Application}
+   \begin{enumerate}
+        \item Sends data to the frontend.
+       \item Stores sensor readings in a MySQL database.
+       \item Database used for calculating historical trends.
+   \end{enumerate}
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Data Processing and Visualization}
+\begin{itemize}
+    \item \textbf{Data Processing}: Process raw sensor data to filter noise and correct any errors. Normalize data for consistent representation.
+    \item \textbf{Visualization}: Use Chart.js or similar libraries to create interactive charts and dashboards in the web application.
+\end{itemize}
+
+\subsection{Air Quality Index (AQI) Calculation}
+The AQI is a standardized way of reporting air quality, considering multiple pollutants. The calculation steps are as follows:
+\begin{enumerate}
+    \item \textbf{Sub-Indices Calculation}: Each pollutant (PM$_{2.5}$, PM$_{10}$) contributes to the overall AQI with a sub-index. For PM$_{2.5}$ and PM$_{10}$, specific AQI breakpoints and formulas are used to convert concentrations to sub-indices.
+    \item \textbf{AQI Breakpoints}: Use established AQI breakpoints from EPA \cite{epa2018aqi} to convert pollutant concentrations to AQI values. For example, for PM$_{2.5}$:
+        \[
+        \text{AQI}_{\text{PM2.5}} = \left( \frac{\text{Concentration} - \text{LowBreak}}{\text{HighBreak} - \text{LowBreak}} \right) \times (\text{HighIndex} - \text{LowIndex}) + \text{LowIndex}
+        \]
+    \item \textbf{Overall AQI}: The overall AQI is typically the highest sub-index from the pollutants measured, ensuring the most significant pollutant affects the reported air quality. \cite{epa2018aqi}
+\end{enumerate}
+
+\subsection{Project Management Tools}
+The following tools will be used:
+\begin{itemize}
+    \item \textbf{Scrum}: Scrum for agile project management, with sprints, stand-up meetings, and sprint reviews.
+    \item \textbf{Jira}: Jira for task management and sprint planning.
+    \item \textbf{GitHub}: GitHub for code collaboration.
+\end{itemize}
+
+\subsection{
+Project Estimations and Milestones}
+\begin{itemize}
+    \item \textbf{Week 1}: Gathering Requirements and project planning.
+    \item \textbf{Week 2-3}: Setting up Hardware \& Sensors.
+    \item \textbf{Week 4}: Web Application and API's Development.
+    \item \textbf{Week 5}: Raspberry Pi integration in as a Gateway to Transfer Sensors data to the cloud.
+    \item \textbf{Week 6}: Testing, debugging, and final deployment.
+\end{itemize}
+
+
+\subsection{
+Project Tech Stack}
+\begin{itemize}
+    \item \textbf{Frontend}: HTML, SCSS, Vue.js
+    \item \textbf{Backend}: PHP, Laravel
+    \item \textbf{Database}: MySQL 
+    \item \textbf{Certificate Authority}: Authority: Let's Encrypt
+    \item \textbf{Email Notifications}: Mailgun
+        \item \textbf{Deployment}: Linux Server on DigitalOcean
+\end{itemize}
+
+% \begin{figure}[H] % H forces the figure to be placed exactly here
+% \centering
+% \includegraphics[width=20pc]{seq_diagram_ssns.drawio.png}
+% \caption{Sequence diagram of the proposed system}
+% \label{fig_seq_diagram}
+% \end{figure}
+\subsection{Project Outputs}
+\begin{figure}[H]
+\centering%
+\includegraphics[width=36pc,height=24pc]{admin_dashborad.png}
+\caption{Admin Dashboard}
+\end{figure}
+
+\begin{figure}[H]
+\centering%
+\includegraphics[width=36pc,height=24pc]{admin_trends.jpeg}
+\caption{Admin Trends}
+\end{figure}
+
+\begin{figure}[H]
+\centering%
+\includegraphics[width=36pc,height=24pc]{readings.png}
+\caption{Readings}
+\end{figure}
+
+\begin{figure}[H]
+\centering%
+\includegraphics[width=36pc,height=24pc]{subscribers.png}
+\caption{Subscribers}
+\end{figure}
+
+\begin{figure}[H]
+\centering%
+\includegraphics[width=36pc,height=24pc]{users.png}
+\caption{Users}
+\end{figure}
+
+\begin{figure}[H]
+\centering%
+\includegraphics[width=36pc,height=24pc]{public_dashboard.png}
+\caption{Public Dashboard}
+\end{figure}
+
+\begin{figure}[H]
+\centering%
+\includegraphics[width=36pc,height=24pc]{humd_trends.png}
+\caption{Humidity Trends}
+\end{figure}
+
+\section{Prototype Measurements and Interpretation}
+The Indoor Air Quality Monitoring System (IAQMS) prototype has been constructed and tested in a controlled indoor environment. The following sensors were used for the measurements:
+\subsection{Data Collected}
+\begin{itemize}
+    \item \textbf{CO$_2$ Levels}: 
+\begin{enumerate}
+    \item Average: 800 ppm
+    \item Minimum: 400 ppm
+    \item Maximum: 2000 ppm
+\end{enumerate}
+    \item \textbf{Temperature}:
+    \begin{enumerate}
+    \item Average: 22°C
+    \item Minimum: 18°C
+    \item Maximum: 27°C
+\end{enumerate}
+\item \textbf{Humidity:}
+\begin{enumerate}
+    \item Average: 50\% RH
+    \item Minimum: 30\% RH
+    \item Maximum: 70\% RH
+\end{enumerate}
+
+\item \textbf{Particulate Matter (PM2.5):}
+\begin{enumerate}
+    \item Average: 15 µg/m³
+    \item Minimum: 5 µg/m³
+    \item Maximum: 40 µg/m³
+\end{enumerate}
+
+\item \textbf{VOCs:}
+\begin{enumerate}
+    \item Average: 400 ppb
+    \item Minimum: 100 ppb
+    \item Maximum: 1000 ppb
+\end{enumerate}
+\end{itemize}
+
+\subsection{Interpretation}
+The measurements indicate that the indoor environment generally maintains acceptable air quality levels, with occasional peaks likely due to activities such as cooking or cleaning. CO2 levels frequently rise above the recommended threshold of 1000 ppm, suggesting a need for improved ventilation. Particulate matter levels remained within acceptable limits for the majority of the time but showed significant spikes during activities that generated dust or smoke. The VOC levels also indicated periods of increased emissions, likely from household products or activities.
+These measurements validate the functionality of the sensors and the system's ability to detect changes in air quality. The data also highlights the importance of continuous monitoring to manage indoor air quality effectively.
+\cite{epa2018aqi}
+
+\section{Specification of Data Visualization and Analysis}
+\subsection{Data Visualization}
+The data visualization component of the IAQMS web application is designed to provide real-time and historical insights into indoor air quality. Key features include:
+
+\begin{itemize}
+    \item \textbf{Real-Time Dashboard}: Displays current readings from all sensors, updated every minute. 
+\begin{enumerate}
+    \item Line Charts: Line Charts to view historical trends of Last 24 hours and Last Week data such as CO2, temperature, particulate matter, TVOC and humidity
+\end{enumerate}
+
+    \item \textbf{Historical Data}: Users can view historical trends by selecting specific time ranges (e.g., last 24 hours, last week). 
+\begin{enumerate}
+    \item Interactive Graphs: Users can zoom in/out and hover over data points for detailed information.
+\end{enumerate}
+
+    \item \textbf{Alerts and Notifications}: Real-time alerts for when air quality parameters exceed predefined thresholds.
+\begin{enumerate}
+    \item Email and SMS Notifications: Immediate alerts are sent to users for critical levels of pollutants.
+\end{enumerate}
+\end{itemize}
+
+\subsection{Data Analysis}
+The data analysis component is closely related to the research questions and aims to provide meaningful insights from the collected data. Key functionalities include:
+
+\begin{itemize}
+    \item \textbf{Statistical Analysis}:
+\begin{enumerate}
+    \item Descriptive Statistics: Mean, median, mode, standard deviation for each parameter.
+    \item Correlation Analysis: Identify relationships between different air quality parameters (e.g., correlation between VOCs and CO2 levels).
+\end{enumerate}
+
+    \item \textbf{Trend Analysis}:
+\begin{enumerate}
+    \item Time Series Analysis: Detect patterns and trends over time, such as daily cycles of CO2 concentration or weekly patterns in particulate matter levels.
+    \item Anomaly Detection: Identify outliers and unusual patterns that may indicate events or activities impacting air quality.
+\end{enumerate}
+
+    \item \textbf{Predictive Analysis}:
+\begin{enumerate}
+    \item Machine Learning Models: Predict future air quality levels based on historical data and external factors (e.g., weather conditions, occupancy levels).
+\end{enumerate}
+
+    \item \textbf{Health Impact Analysis}:
+\begin{enumerate}
+    \item Exposure Assessment: Estimate the exposure levels of occupants to various pollutants over time and compare them with health guidelines and standards.
+\end{enumerate}
+\end{itemize}
+
+
+\section{Conclusion}
+This project will leverage advanced sensors, wireless communication, and cloud computing to create an efficient and scalable air quality monitoring system. The integration of WSNs with cloud-based data visualization will provide valuable insights into environmental conditions, contributing to improved public health and environmental protection.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
